@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SuspiciousAPI
+namespace SuspiciousAPI;
+
+[BepInPlugin]
+public class BepInExPlugin
 {
-    public class BepInExPlugin
-    {
-    }
+
 }
