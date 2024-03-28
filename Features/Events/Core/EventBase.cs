@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SuspiciousAPI.Core.Events;
+namespace SuspiciousAPI.Features.Events.Core;
 
 /// <summary>
 /// Base class that all events have to inherit. <see cref="Cancellable"/> is strictly for informational purposes and is ignored in implementation.

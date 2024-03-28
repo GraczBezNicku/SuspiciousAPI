@@ -61,6 +61,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BepInExPlugin.cs" />
+    <Compile Include="EventsHandler.cs" />
+    <Compile Include="Features\Events\Core\EventAttribute.cs" />
+    <Compile Include="Features\Events\Core\EventBase.cs" />
+    <Compile Include="Features\Events\Core\EventManager.cs" />
+    <Compile Include="Features\Events\SampleEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,7 +1,7 @@
-﻿using SuspiciousAPI.Core.Events;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +13,7 @@ namespace SuspiciousAPI.Features.Events.Core;
 /// </summary>
 public static class EventManager
 {
-    public static Dictionary<Type, List<Delegate>> EventTypeToDelegates = new Dictionary<Type, List<Delegate>>();
+    public static Dictionary<Type, List<MethodInfo>> EventTypeToMethodInfo = new Dictionary<Type, List<MethodInfo>>();
     public static Dictionary<Type, object> EventHandlers = new Dictionary<Type, object>();
 
     /// <summary>
@@ -31,26 +31,37 @@ public static class EventManager
 
         Type eventType = eventArgs.GetType();
 
-        if (!EventTypeToDelegates.ContainsKey(eventType))
+        if (!EventTypeToMethodInfo.ContainsKey(eventType))
         {
             BepInExPlugin.Instance.Log.LogError($"Event of type {eventType} is not registered! (Not a key of EventTypeToDelegates)");
             return true;
         }
 
         bool anyReturnedFalse = false;
-        foreach (Delegate del in EventTypeToDelegates[eventType])
+        foreach (MethodInfo method in EventTypeToMethodInfo[eventType])
         {
-            object returned = del.Method.Invoke(EventHandlers[eventType], new object[] { eventArgs });
+            try
+            {
+                object returned = method.Invoke(EventHandlers[eventType], new object[] { eventArgs });
 
-            if (returned == null)
-                continue;
+                if (returned == null)
+                    continue;
 
-            anyReturnedFalse = (bool)returned;
+                anyReturnedFalse = (bool)returned;
+            }
+            catch (Exception ex)
+            {
+                BepInExPlugin.Instance.Log.LogError($"Failed executing event for method {method.Name} ({eventArgs.GetType().Name})!\n{ex}");
+            }
         }
 
         return eventArgs.Cancellable ? !anyReturnedFalse : true;
     }
 
+    /// <summary>
+    /// Subscribes methods with the <see cref="Event"/> attribute in the provided mod.
+    /// </summary>
+    /// <param name="mod">Mod's instance, derived from a class that inherits <see cref="ModLoader.Core.SusMod"/>.</param>
     public static void RegisterEvents(object mod)
     {
         Assembly targetAssembly = Assembly.GetAssembly(mod.GetType());
@@ -60,24 +71,22 @@ public static class EventManager
             if (!type.IsClass)
                 continue;
 
-            bool found = false;
-            object handler = null;
-
             foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public))
             {
                 if (!IsValidEvent(method, out var eventType))
                     continue;
                 
-                if (!found)
-                {
-                    found = true;
-                    handler = Activator.CreateInstance(type);
-                    EventHandlers.Add(type, handler);
-                }
+                if (!EventHandlers.ContainsKey(eventType))
+                    EventHandlers.Add(eventType, Activator.CreateInstance(type));
 
-                RegisterEvent(eventType, method, handler);
+                RegisterEvent(eventType, method);
             }
         }
+    }
+
+    public static void UnregisterEvents(object mod)
+    {
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -104,7 +113,7 @@ public static class EventManager
         ParameterInfo[] args = method.GetParameters();
 
         if (args.Length != 1
-            || args.First().ParameterType != typeof(EventBase))
+            || !args.First().ParameterType.IsSubclassOf(typeof(EventBase)))
         {
             if (printError)
             {
@@ -117,16 +126,14 @@ public static class EventManager
         return true;
     }
 
-    private static void RegisterEvent(Type eventType, MethodInfo method, object handler)
+    private static void RegisterEvent(Type eventType, MethodInfo method)
     {
-        if (!EventTypeToDelegates.ContainsKey(eventType))
-            EventTypeToDelegates.Add(eventType, new List<Delegate>());
+        if (!EventTypeToMethodInfo.ContainsKey(eventType))
+            EventTypeToMethodInfo.Add(eventType, new List<MethodInfo>());
 
-        Delegate del = Delegate.CreateDelegate(method.ReturnType, handler, method.Name);
-
-        if (EventTypeToDelegates[eventType].Contains(del))
+        if (EventTypeToMethodInfo[eventType].Contains(method))
             return;
 
-        EventTypeToDelegates[eventType].Add(del);
+        EventTypeToMethodInfo[eventType].Add(method);
     }
 }

@@ -2,6 +2,8 @@
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using SuspiciousAPI.Features.Events;
+using SuspiciousAPI.Features.Events.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +27,12 @@ public class BepInExPlugin : BasePlugin
         _harmony = new Harmony($"GBN-SUSPICIOUSAPI");
         _harmony.PatchAll();
 
-        // INIT
+        // LOAD MODS
+        EventManager.RegisterEvents(this);
 
         Log.LogMessage($"Suspicious API has been initialized!");
+
+        EventManager.ExecuteEvent(new SampleEvent()); // FIXME: Remove this after testing, as well as the class and Registering a few lines above. 
     }
 
     public override bool Unload()
