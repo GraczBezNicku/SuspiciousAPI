@@ -33,7 +33,7 @@ public static class EventManager
 
         if (!EventTypeToMethodInfo.ContainsKey(eventType))
         {
-            BepInExPlugin.Instance.Log.LogError($"Event of type {eventType} is not registered! (Not a key of EventTypeToDelegates)");
+            BepInExPlugin.Instance.Log.LogError($"Event of type {eventType} is not registered! (Not a key of {nameof(EventTypeToMethodInfo)})");
             return true;
         }
 

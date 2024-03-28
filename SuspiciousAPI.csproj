@@ -66,6 +66,7 @@
     <Compile Include="Features\Events\Core\EventBase.cs" />
     <Compile Include="Features\Events\Core\EventManager.cs" />
     <Compile Include="Features\Events\SampleEvent.cs" />
+    <Compile Include="Features\ModLoader\Core\SusMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
