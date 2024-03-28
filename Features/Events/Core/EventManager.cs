@@ -40,7 +40,12 @@ public static class EventManager
         bool anyReturnedFalse = false;
         foreach (Delegate del in EventTypeToDelegates[eventType])
         {
-            // Wait for delegate rewrite. Execute all subscribers
+            object returned = del.Method.Invoke(EventHandlers[eventType], new object[] { eventArgs });
+
+            if (returned == null)
+                continue;
+
+            anyReturnedFalse = (bool)returned;
         }
 
         return eventArgs.Cancellable ? !anyReturnedFalse : true;
@@ -48,8 +53,6 @@ public static class EventManager
 
     public static void RegisterEvents(object mod)
     {
-        // FIXME: Convert delegates to Func objects due to performance concerns.
-
         Assembly targetAssembly = Assembly.GetAssembly(mod.GetType());
 
         foreach (Type type in targetAssembly.GetTypes())
@@ -100,12 +103,12 @@ public static class EventManager
 
         ParameterInfo[] args = method.GetParameters();
 
-        if (args.Length < 1
+        if (args.Length != 1
             || args.First().ParameterType != typeof(EventBase))
         {
             if (printError)
             {
-                BepInExPlugin.Instance.Log.LogError($"Method {method.Name} has to have a EventBase inherited class as its first argument.");
+                BepInExPlugin.Instance.Log.LogError($"Method {method.Name} has to have a EventBase inherited class as its only argument.");
             }
             return false;
         }
