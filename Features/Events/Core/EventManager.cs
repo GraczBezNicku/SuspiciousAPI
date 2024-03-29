@@ -42,7 +42,7 @@ public static class EventManager
         {
             try
             {
-                object returned = method.Invoke(EventHandlers[eventType], new object[] { eventArgs });
+                object returned = method.Invoke(EventHandlers[method.DeclaringType], new object[] { eventArgs });
 
                 if (returned == null)
                     continue;
@@ -76,14 +76,19 @@ public static class EventManager
                 if (!IsValidEvent(method, out var eventType))
                     continue;
                 
-                if (!EventHandlers.ContainsKey(eventType))
-                    EventHandlers.Add(eventType, Activator.CreateInstance(type));
+                if (!EventHandlers.ContainsKey(type))
+                    EventHandlers.Add(type, Activator.CreateInstance(type));
 
                 RegisterEvent(eventType, method);
             }
         }
     }
 
+    /// <summary>
+    /// Unsubscribes methods with the <see cref="Event"/> attribute in the provided mod.
+    /// </summary>
+    /// <param name="mod">Mod's instance, derived from a class that inherits <see cref="ModLoader.Core.SusMod"/>.</param>
+    /// <exception cref="NotImplementedException"></exception>
     public static void UnregisterEvents(object mod)
     {
         throw new NotImplementedException();

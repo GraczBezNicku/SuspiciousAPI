@@ -58,6 +58,12 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>References\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="YamlDotNet">
+      <HintPath>References\YamlDotNet.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BepInExPlugin.cs" />
@@ -66,7 +72,10 @@
     <Compile Include="Features\Events\Core\EventBase.cs" />
     <Compile Include="Features\Events\Core\EventManager.cs" />
     <Compile Include="Features\Events\SampleEvent.cs" />
+    <Compile Include="Features\ModLoader\Core\SusConfig.cs" />
+    <Compile Include="Features\ModLoader\Core\SusConfigAttribute.cs" />
     <Compile Include="Features\ModLoader\Core\SusMod.cs" />
+    <Compile Include="Features\ModLoader\ModLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
