@@ -33,7 +33,7 @@ public class SusConfig
     {
         if (!_configLoaded)
         {
-            BepInExPlugin.Instance.Log.LogError($"Can't save a config that hasn't been loaded yet!");
+            Logger.LogError($"Can't save a config that hasn't been loaded yet!");
             return;
         }
 

@@ -1,8 +1,12 @@
 ﻿using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using SuspiciousAPI.Features;
 using SuspiciousAPI.Features.ModLoader;
+using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace SuspiciousAPI;
 
@@ -18,11 +22,14 @@ public class BepInExPlugin : BasePlugin
     {
         Instance = this;
 
+        BepInExConfig.Bind(Config);
+
         _harmony = new Harmony($"GBN-SUSPICIOUSAPI");
         _harmony.PatchAll();
 
         SetupDirectories();
-        ModLoader.LoadAllMods();
+
+        //ModLoader.LoadAllMods();
 
         Log.LogMessage($"Suspicious API has been initialized!");
     }

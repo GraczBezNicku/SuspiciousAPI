@@ -25,7 +25,7 @@ public static class EventManager
     {
         if (eventArgs == null)
         {
-            BepInExPlugin.Instance.Log.LogError($"eventArgs cannot be null!");
+            Logger.LogError($"eventArgs cannot be null!");
             return true;
         }
 
@@ -33,7 +33,7 @@ public static class EventManager
 
         if (!EventTypeToMethodInfo.ContainsKey(eventType))
         {
-            BepInExPlugin.Instance.Log.LogError($"Event of type {eventType} is not registered! (Not a key of {nameof(EventTypeToMethodInfo)})");
+            Logger.LogError($"Event of type {eventType} is not registered! (Not a key of {nameof(EventTypeToMethodInfo)})");
             return true;
         }
 
@@ -51,7 +51,7 @@ public static class EventManager
             }
             catch (Exception ex)
             {
-                BepInExPlugin.Instance.Log.LogError($"Failed executing event for method {method.Name} ({eventArgs.GetType().Name})!\n{ex}");
+                Logger.LogError($"Failed executing event for method {method.Name} ({eventArgs.GetType().Name})!\n{ex}");
             }
         }
 
@@ -110,7 +110,7 @@ public static class EventManager
         {
             if (printError)
             {
-                BepInExPlugin.Instance.Log.LogError($"Method {method.Name} has to return void or bool to be a valid event method!");
+                Logger.LogError($"Method {method.Name} has to return void or bool to be a valid event method!");
             }
             return false;
         }
@@ -122,7 +122,7 @@ public static class EventManager
         {
             if (printError)
             {
-                BepInExPlugin.Instance.Log.LogError($"Method {method.Name} has to have a EventBase inherited class as its only argument.");
+                Logger.LogError($"Method {method.Name} has to have a EventBase inherited class as its only argument.");
             }
             return false;
         }

@@ -66,14 +66,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BepInExConfig.cs" />
     <Compile Include="BepInExPlugin.cs" />
     <Compile Include="EventsHandler.cs" />
     <Compile Include="Features\Events\Core\EventAttribute.cs" />
     <Compile Include="Features\Events\Core\EventBase.cs" />
     <Compile Include="Features\Events\Core\EventManager.cs" />
     <Compile Include="Features\Events\SampleEvent.cs" />
+    <Compile Include="Features\Logger.cs" />
     <Compile Include="Features\ModLoader\Core\SusConfig.cs" />
-    <Compile Include="Features\ModLoader\Core\SusConfigAttribute.cs" />
+    <Compile Include="Features\ModLoader\Core\ModConfigAttribute.cs" />
     <Compile Include="Features\ModLoader\Core\SusMod.cs" />
     <Compile Include="Features\ModLoader\ModLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
