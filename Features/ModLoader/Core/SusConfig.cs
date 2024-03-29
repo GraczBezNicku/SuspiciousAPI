@@ -11,7 +11,7 @@ using YamlDotNet.Serialization.NamingConventions;
 namespace SuspiciousAPI.Features.ModLoader.Core;
 
 /// <summary>
-/// Config file for a <see cref="SusMod"/> instance. Create a class that inherits <see cref="SusConfig"/> and mark it as a ModConfig using the <see cref="ModConfig"/> attribute.
+/// Config file for a <see cref="SusMod"/> instance. Create a class that inherits <see cref="SusConfig"/> and make a field with it that has the <see cref="ModConfig"/> attribute.
 /// </summary>
 public class SusConfig
 {

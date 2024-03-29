@@ -1,17 +1,8 @@
 ﻿using BepInEx;
-using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
-using SuspiciousAPI.Features.Events;
-using SuspiciousAPI.Features.Events.Core;
 using SuspiciousAPI.Features.ModLoader;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Il2CppSystem.Net.Mime.MediaTypeNames;
 
 namespace SuspiciousAPI;
 
@@ -34,8 +25,6 @@ public class BepInExPlugin : BasePlugin
         ModLoader.LoadAllMods();
 
         Log.LogMessage($"Suspicious API has been initialized!");
-
-        //EventManager.ExecuteEvent(new SampleEvent()); // FIXME: Remove this after testing, as well as the class and Registering a few lines above. 
     }
 
     public override bool Unload()

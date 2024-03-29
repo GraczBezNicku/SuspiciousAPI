@@ -47,7 +47,7 @@ public static class EventManager
                 if (returned == null)
                     continue;
 
-                anyReturnedFalse = (bool)returned;
+                anyReturnedFalse = anyReturnedFalse ? true : (bool)returned;
             }
             catch (Exception ex)
             {
