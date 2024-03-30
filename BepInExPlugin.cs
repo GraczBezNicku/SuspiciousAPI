@@ -29,7 +29,7 @@ public class BepInExPlugin : BasePlugin
 
         SetupDirectories();
 
-        //ModLoader.LoadAllMods();
+        ModLoader.LoadAllMods();
 
         Log.LogMessage($"Suspicious API has been initialized!");
     }

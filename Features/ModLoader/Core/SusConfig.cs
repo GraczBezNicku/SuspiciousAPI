@@ -41,7 +41,7 @@ public class SusConfig
         File.WriteAllText(configPath, _Serializer.Serialize(this));
     }
 
-    public static SusConfig LoadConfig(SusMod mod) 
+    public static object LoadConfig(SusMod mod, Type configType) 
     {
         string configDirectory = Paths.GameRootPath + $@"\SusAPI\Configs\{mod.UUID}";
 
@@ -50,17 +50,17 @@ public class SusConfig
 
         string configPath = Paths.GameRootPath + $@"\SusAPI\Configs\{mod.UUID}\config.yml";
 
-        SusConfig cfg = new SusConfig(mod);
+        object modConfig = Activator.CreateInstance(configType, new object[] { mod });
         if (!File.Exists(configPath))
         {
-            File.WriteAllText(configPath, cfg._Serializer.Serialize(cfg));
+            File.WriteAllText(configPath, (modConfig as SusConfig)._Serializer.Serialize(modConfig));
         }
         else
         {
-            cfg = cfg._Deserializer.Deserialize<SusConfig>(File.ReadAllText(configPath));
+            modConfig = (modConfig as SusConfig)._Deserializer.Deserialize(File.ReadAllText(configPath));
         }
 
-        cfg._configLoaded = true;
-        return cfg;
+        (modConfig as SusConfig)._configLoaded = true;
+        return modConfig;
     }
 }
