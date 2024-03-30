@@ -13,6 +13,11 @@ namespace SuspiciousAPI.Features.ModLoader;
 
 public static class ModLoader
 {
+    /// <summary>
+    /// Contains mod configs. Always check for a key presence, since a mod without a config class will not be inside this Dictionary.
+    /// </summary>
+    public static Dictionary<SusMod, object> ModInstanceToConfig = new Dictionary<SusMod, object>();
+
     public static Dictionary<Type, object> ModInstances = new Dictionary<Type, object>();
     public static List<Assembly> Dependencies = new List<Assembly>();
 
@@ -80,15 +85,11 @@ public static class ModLoader
             try
             {
                 SusMod mod = (SusMod)Activator.CreateInstance(modClass);
+                mod.LoadConfig(out var cfg);
 
-                foreach (FieldInfo field in modClass.GetFields(BindingFlags.Instance | BindingFlags.Public))
+                if (cfg != null)
                 {
-                    ModConfig cfgField = field.GetCustomAttribute<ModConfig>();
-                    if (cfgField == null)
-                        continue;
-
-                    field.SetValue(mod, SusConfig.LoadConfig(mod, field.FieldType));
-                    break;
+                    ModInstanceToConfig.Add(mod, cfg);
                 }
 
                 ModInstances.Add(modClass, mod);
@@ -96,7 +97,7 @@ public static class ModLoader
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Failed creating mod instance for {assembly.FullName}!\n{ex}");
+                Logger.LogError($"Failed creating mod instance for {assembly.FullName}!\n{ex}\n{ex.StackTrace}\n{ex.Data}");
                 continue;
             }
         }
@@ -117,7 +118,7 @@ public static class ModLoader
                 if (Dependencies.Any(x => x.FullName == dep.FullName))
                     continue;
 
-                Logger.LogDebug($"Loading dependency: {dep.FullName}");
+                Logger.LogDebug($"Loading dependency: {dep.FullName}", BepInExConfig.DebugMode);
                 Dependencies.Add(dep);
             }
             catch (Exception ex)
@@ -143,7 +144,7 @@ public static class ModLoader
         bool anyFailed = false;
         foreach (AssemblyName referencedAssembly in referencedAssemblies)
         {
-            Logger.LogDebug($"{assembly.FullName} has referenced {referencedAssembly.FullName}");
+            Logger.LogDebug($"{assembly.FullName} has referenced {referencedAssembly.FullName}", BepInExConfig.DebugMode);
 
             if (loadedAssemblies.Any(x => x.FullName == referencedAssembly.FullName))
                 continue;
@@ -163,7 +164,7 @@ public static class ModLoader
     /// <returns><see langword="true"/> if all embedded dependencies were resolved, otherwise <see langword="false"/>.</returns>
     public static bool ResolveEmbededDependencies(Assembly assembly, out string dependencyList)
     {
-        Logger.LogDebug($"Resolving Embedded Resources for {assembly.FullName}");
+        Logger.LogDebug($"Resolving Embedded Resources for {assembly.FullName}", BepInExConfig.DebugMode);
 
         dependencyList = "";
         bool anyFailed = false;
@@ -181,7 +182,7 @@ public static class ModLoader
 
                     if (data == null)
                     {
-                        Logger.LogDebug($"Could not resolve embeded dependency: {resource}");
+                        Logger.LogDebug($"Could not resolve embeded dependency: {resource}", BepInExConfig.DebugMode);
                         dependencyList += $"- {resource}\n";
                         anyFailed = true;
                         continue;
@@ -196,7 +197,7 @@ public static class ModLoader
 
                     if (data == null)
                     {
-                        Logger.LogDebug($"Could not resolve embeded dependency: {resource}");
+                        Logger.LogDebug($"Could not resolve embeded dependency: {resource}", BepInExConfig.DebugMode);
                         dependencyList += $"- {resource}\n";
                         anyFailed = true;
                         continue;
@@ -208,7 +209,7 @@ public static class ModLoader
                     deflatedStream.CopyTo(memoryStream);
                     Dependencies.Add(Assembly.Load(memoryStream.ToArray()));
                 }
-                Logger.LogDebug($"Successfully resolved embeded dependency: {resource}");
+                Logger.LogDebug($"Successfully resolved embeded dependency: {resource}", BepInExConfig.DebugMode);
             }
         }
         catch (Exception ex)

@@ -22,16 +22,19 @@ public class Mod : SusMod
 
     public override void Load()
     {
-        Logger.LogInfo($"ExampleMod has been initialized!");
+        if (!Conifg.IsEnabled)
+            return;
+
+        Logger.LogMessage($"ExampleMod has been initialized!");
     }
 
     public override void Reload()
     {
-        Logger.LogInfo($"ExampleMod has been reloaded!");
+        Logger.LogMessage($"ExampleMod has been reloaded!");
     }
 
     public override void Unload()
     {
-        Logger.LogInfo($"ExampleMod has been unloaded!");
+        Logger.LogMessage($"ExampleMod has been unloaded!");
     }
 }

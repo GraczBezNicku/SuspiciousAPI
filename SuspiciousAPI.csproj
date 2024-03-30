@@ -35,6 +35,9 @@
     <Reference Include="0Harmony">
       <HintPath>References\0Harmony.dll</HintPath>
     </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>References\Assembly-CSharp.dll</HintPath>
+    </Reference>
     <Reference Include="BepInEx.Core">
       <HintPath>References\BepInEx.Core.dll</HintPath>
     </Reference>
@@ -44,6 +47,15 @@
     <Reference Include="Cpp2IL.Core">
       <HintPath>References\Cpp2IL.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Il2CppInterop.Common, Version=1.4.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>References\Il2CppInterop.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2CppInterop.Runtime, Version=1.4.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>References\Il2CppInterop.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="Il2CppSystem">
       <HintPath>References\Il2CppSystem.dll</HintPath>
     </Reference>
@@ -68,16 +80,17 @@
   <ItemGroup>
     <Compile Include="BepInExConfig.cs" />
     <Compile Include="BepInExPlugin.cs" />
-    <Compile Include="EventsHandler.cs" />
+    <Compile Include="Features\Configs.cs" />
     <Compile Include="Features\Events\Core\EventAttribute.cs" />
     <Compile Include="Features\Events\Core\EventBase.cs" />
     <Compile Include="Features\Events\Core\EventManager.cs" />
     <Compile Include="Features\Events\SampleEvent.cs" />
     <Compile Include="Features\Logger.cs" />
-    <Compile Include="Features\ModLoader\Core\SusConfig.cs" />
     <Compile Include="Features\ModLoader\Core\ModConfigAttribute.cs" />
     <Compile Include="Features\ModLoader\Core\SusMod.cs" />
     <Compile Include="Features\ModLoader\ModLoader.cs" />
+    <Compile Include="Features\Player.cs" />
+    <Compile Include="Features\Helpers\YAML.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

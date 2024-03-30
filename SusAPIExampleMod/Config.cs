@@ -7,15 +7,10 @@ using System.Threading.Tasks;
 
 namespace SusAPIExampleMod;
 
-public class Config : SusConfig
+public class Config
 {
-    public override bool IsEnabled { get => base.IsEnabled; set => base.IsEnabled = value; }
-    public override bool DebugMode { get => base.DebugMode; set => base.DebugMode = value; }
+    public bool IsEnabled { get; set; } = true;
+    public bool DebugMode { get; set; } = false;
 
     public int SherrifChance { get; set; } = 100;
-
-    public Config(SusMod mod) : base(mod)
-    {
-
-    }
 }
