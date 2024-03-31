@@ -1,4 +1,5 @@
 ﻿using SuspiciousAPI.Features;
+using SuspiciousAPI.Features.Events.Core;
 using SuspiciousAPI.Features.ModLoader.Core;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+
+using static SuspiciousAPI.Features.Logger;
 
 namespace SusAPIExampleMod;
 
@@ -25,16 +28,18 @@ public class Mod : SusMod
         if (!Conifg.IsEnabled)
             return;
 
-        Logger.LogMessage($"ExampleMod has been initialized!");
+        EventManager.RegisterEvents(this);
+
+        LogMessage($"ExampleMod has been initialized!");
     }
 
     public override void Reload()
     {
-        Logger.LogMessage($"ExampleMod has been reloaded!");
+        LogMessage($"ExampleMod has been reloaded!");
     }
 
     public override void Unload()
     {
-        Logger.LogMessage($"ExampleMod has been unloaded!");
+        LogMessage($"ExampleMod has been unloaded!");
     }
 }

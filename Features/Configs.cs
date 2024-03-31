@@ -65,10 +65,9 @@ public static class Configs
     }
 
     /// <summary>
-    /// Saves the config for a provided <see cref="SusMod"/> instance with a provided 
+    /// Saves the config for a provided <see cref="SusMod"/>
     /// </summary>
     /// <param name="mod"></param>
-    /// <param name="configType"></param>
     public static void SaveConfig(this SusMod mod)
     {
         if (!ModInstanceToConfig.ContainsKey(mod))
