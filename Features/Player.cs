@@ -27,12 +27,36 @@ public class Player
     }
 
     /// <summary>
+    /// Gets the underlying <see cref="PlayerControl"/> object.
+    /// </summary>
+    public PlayerControl Control
+    {
+        get => _playerControl;
+    }
+
+    /// <summary>
     /// Gets the <see cref="Player"/>'s name. This may be empty if accessed directly before initialization. (Use <see cref="Events.PlayerInitialized"/> event)
     /// </summary>
     public string Name
     {
         get => _playerControl.Data.PlayerName;
         set => GameData.Instance.UpdateName(_playerControl.PlayerId, value);
+    }
+
+    /// <summary>
+    /// Returns all existing <see cref="Player"/> objects.
+    /// </summary>
+    /// <returns></returns>
+    public static IEnumerable<Player> GetPlayers()
+    {
+        List<Player> players = new List<Player>();
+
+        foreach (PlayerControl ctrl in PlayerControl.AllPlayerControls)
+        {
+            players.Add(Get(ctrl));
+        }
+
+        return players;
     }
 
     /// <summary>

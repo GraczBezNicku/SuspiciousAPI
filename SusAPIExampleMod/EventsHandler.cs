@@ -24,4 +24,10 @@ public class EventsHandler
     {
         LogMessage($"A player is about to join the game! Name: {ev.PlayerData.PlayerName}");
     }
+
+    [Event]
+    public void OnPlayerDisconnected(PlayerDisconnected ev)
+    {
+        LogMessage($"A player has disconnected from the game! Name: {ev.Player.Name}");
+    }
 }

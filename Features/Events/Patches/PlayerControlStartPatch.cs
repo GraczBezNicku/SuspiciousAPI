@@ -19,7 +19,7 @@ public static class PlayerControlStartPatch
         CoroutineHelper.Instance.StartCoroutine(InitializeAfterOneFrame(__instance));
     }
 
-    // As of now, I don't have any better ideas on how to handle this. One frame difference is still good, considering that anything under one frame would require a manual patch by a plugin dev.
+    // FIXME: This works only on the LocalPlayer. You'll need to find a better entry point to inject this into, since this can cause a nullref
     public static IEnumerator InitializeAfterOneFrame(PlayerControl pc)
     {
         yield return new WaitForEndOfFrame();

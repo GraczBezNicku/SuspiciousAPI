@@ -86,7 +86,7 @@
     <Compile Include="Features\Events\Core\EventBase.cs" />
     <Compile Include="Features\Events\Core\EventManager.cs" />
     <Compile Include="Features\Events\Patches\CreatePlayerPatch.cs" />
-    <Compile Include="Features\Events\Patches\OnPlayerDisconnectedPatch.cs" />
+    <Compile Include="Features\Events\Patches\OnPlayerLeftPatch.cs" />
     <Compile Include="Features\Events\Patches\PlayerControlStartPatch.cs" />
     <Compile Include="Features\Events\PlayerDisconnected.cs" />
     <Compile Include="Features\Events\PlayerInitialized.cs" />

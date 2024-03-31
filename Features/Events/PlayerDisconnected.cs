@@ -1,4 +1,5 @@
-﻿using SuspiciousAPI.Features.Events.Core;
+﻿using InnerNet;
+using SuspiciousAPI.Features.Events.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,9 @@ using System.Threading.Tasks;
 namespace SuspiciousAPI.Features.Events;
 
 /// <summary>
-/// Called when a <see cref="Features.Player"/> has disconnected for any reason.
+/// Called when a <see cref="Features.Player"/> has disconnected for any reason. NOTE: This does not apply to the LocalPlayer.
 /// </summary>
-public sealed class PlayerDisconnected : EventBase
+public class PlayerDisconnected : EventBase
 {
     public Player Player { get; }
     public DisconnectReasons DisconnectReason { get; }
