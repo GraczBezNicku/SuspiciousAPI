@@ -14,16 +14,32 @@ namespace SuspiciousAPI.Features.Events.Patches;
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Start))]
 public static class PlayerControlStartPatch
 {
-    public static void Postfix(PlayerControl __instance)
+    public static void Prefix(PlayerControl __instance)
     {
-        CoroutineHelper.Instance.StartCoroutine(InitializeAfterOneFrame(__instance));
+        CoroutineHelper.Instance.StartCoroutine(CallEventOnInitialization(__instance));
     }
 
-    // FIXME: This works only on the LocalPlayer. You'll need to find a better entry point to inject this into, since this can cause a nullref
-    public static IEnumerator InitializeAfterOneFrame(PlayerControl pc)
+    public static IEnumerator CallEventOnInitialization(PlayerControl ctrl)
     {
-        yield return new WaitForEndOfFrame();
-        Logger.LogDebug($"Finished enumerating PlayerControl::Start(), running patch!", BepInExConfig.DebugMode);
-        EventManager.ExecuteEvent(new PlayerInitialized(Player.Get(pc)));
+        int timeoutFrames = 600;
+        while (timeoutFrames > 0)
+        {
+            yield return new WaitForEndOfFrame();
+
+            if (ctrl.CurrentOutfit == null)
+            {
+                timeoutFrames--;
+                continue;
+            }
+
+            if (ctrl.CurrentOutfit.IsIncomplete)
+            {
+                timeoutFrames--;
+                continue;
+            }
+
+            EventManager.ExecuteEvent(new PlayerInitialized(Player.Get(ctrl)));
+            break;
+        }
     }
 }
