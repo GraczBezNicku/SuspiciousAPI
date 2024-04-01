@@ -27,6 +27,11 @@ public class Player
     }
 
     /// <summary>
+    /// Gets the LocalPlayer.
+    /// </summary>
+    public static Player LocalPlayer => Get(PlayerControl.LocalPlayer);
+
+    /// <summary>
     /// Gets the underlying <see cref="PlayerControl"/> object.
     /// </summary>
     public PlayerControl Control
@@ -64,29 +69,21 @@ public class Player
     /// </summary>
     /// <param name="control">playerId belonging to wanted <see cref="Player"/>.</param>
     /// <returns>A <see cref="Player"/> object if found, otherwise <see langword="null"/>.</returns>
-    public static Player Get(byte playerId)
-    {
-        PlayerInfo info = GameData.Instance.GetPlayerById(playerId);
-
-        if (info == null)
-            return null;
-
-        return Get(info.Object);
-    }
+    public static Player Get(byte playerId) => Get(GameData.Instance.GetPlayerById(playerId)?.Object);
 
     /// <summary>
     /// Gets a <see cref="Player"/> instance based on the provided <see cref="ClientData"/>.
     /// </summary>
     /// <param name="control"><see cref="ClientData"/> belonging to wanted <see cref="Player"/>.</param>
     /// <returns>A <see cref="Player"/> object if found, otherwise <see langword="null"/>.</returns>
-    public static Player Get(ClientData data) => Get(data.Character);
+    public static Player Get(ClientData data) => Get(data?.Character);
 
     /// <summary>
     /// Gets a <see cref="Player"/> instance based on the provided <see cref="PlayerControl"/>.
     /// </summary>
     /// <param name="control"><see cref="PlayerControl"/> belonging to wanted <see cref="Player"/>.</param>
     /// <returns>A <see cref="Player"/> object if found, otherwise <see langword="null"/>.</returns>
-    public static Player Get(PlayerControl control) => Get(control.gameObject);
+    public static Player Get(PlayerControl control) => Get(control?.gameObject);
 
     /// <summary>
     /// Gets a <see cref="Player"/> instance based on the provided <see cref="GameObject"/>.

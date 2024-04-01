@@ -47,6 +47,10 @@
     <Reference Include="Cpp2IL.Core">
       <HintPath>References\Cpp2IL.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Hazel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>References\Hazel.dll</HintPath>
+    </Reference>
     <Reference Include="Il2CppInterop.Common, Version=1.4.6.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>References\Il2CppInterop.Common.dll</HintPath>
@@ -70,10 +74,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>References\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>References\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="YamlDotNet">
       <HintPath>References\YamlDotNet.dll</HintPath>
     </Reference>
@@ -82,23 +91,34 @@
     <Compile Include="BepInExConfig.cs" />
     <Compile Include="BepInExPlugin.cs" />
     <Compile Include="Features\Configs.cs" />
+    <Compile Include="Features\CustomRPCs\Core\RpcManager.cs" />
     <Compile Include="Features\Events\Core\EventAttribute.cs" />
     <Compile Include="Features\Events\Core\EventBase.cs" />
     <Compile Include="Features\Events\Core\EventManager.cs" />
+    <Compile Include="Features\Events\LobbyCountdownStarted.cs" />
+    <Compile Include="Features\Events\LobbyCountdownStarting.cs" />
     <Compile Include="Features\Events\LocalPlayerDisconnected.cs" />
+    <Compile Include="Features\Events\Patches\BeginGamePatches.cs" />
     <Compile Include="Features\Events\Patches\CreatePlayerPatch.cs" />
+    <Compile Include="Features\Events\Patches\DisconnectInternalPatch.cs" />
+    <Compile Include="Features\Events\Patches\EventsHandleRpcPatch.cs" />
     <Compile Include="Features\Events\Patches\OnPlayerLeftPatch.cs" />
     <Compile Include="Features\Events\Patches\PlayerControlStartPatch.cs" />
     <Compile Include="Features\Events\PlayerDisconnected.cs" />
     <Compile Include="Features\Events\PlayerInitialized.cs" />
     <Compile Include="Features\Events\PlayerJoining.cs" />
+    <Compile Include="Features\Game.cs" />
+    <Compile Include="Features\Lobby.cs" />
     <Compile Include="Features\Logger.cs" />
     <Compile Include="Features\ModLoader\Core\ModConfigAttribute.cs" />
     <Compile Include="Features\ModLoader\Core\SusMod.cs" />
     <Compile Include="Features\ModLoader\ModLoader.cs" />
+    <Compile Include="Features\Patches\AmongUsClientAwakePatch.cs" />
     <Compile Include="Features\Player.cs" />
     <Compile Include="Features\Helpers\YAML.cs" />
+    <Compile Include="Features\UnityMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

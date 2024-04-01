@@ -24,6 +24,8 @@ public class BepInExPlugin : BasePlugin
 
         BepInExConfig.Bind(Config);
 
+        ModLoader.RegisterAllMonoBehaviours(this);
+
         _harmony = new Harmony($"GBN-SUSPICIOUSAPI");
         _harmony.PatchAll();
 

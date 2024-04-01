@@ -31,10 +31,8 @@ public static class EventManager
 
         Type eventType = eventArgs.GetType();
 
-        // FIXME: It's just not called by any mods, this should be a debug message if at all.
         if (!EventTypeToMethodInfo.ContainsKey(eventType))
         {
-            Logger.LogError($"Event of type {eventType} is not registered! (Not a key of {nameof(EventTypeToMethodInfo)})");
             return true;
         }
 

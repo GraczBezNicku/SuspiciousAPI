@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using Il2CppInterop.Runtime.Injection;
 using SuspiciousAPI.Features.ModLoader.Core;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace SuspiciousAPI.Features.ModLoader;
 
@@ -92,6 +94,8 @@ public static class ModLoader
                     ModInstanceToConfig.Add(mod, cfg);
                 }
 
+                RegisterAllMonoBehaviours(mod);
+
                 ModInstances.Add(modClass, mod);
                 mod.Load();
             }
@@ -100,6 +104,26 @@ public static class ModLoader
                 Logger.LogError($"Failed creating mod instance for {assembly.FullName}!\n{ex}\n{ex.StackTrace}\n{ex.Data}");
                 continue;
             }
+        }
+    }
+
+    /// <summary>
+    /// Automatically registers all <see cref="MonoBehaviour"/> classes in the provided mod instance.
+    /// </summary>
+    /// <param name="mod"></param>
+    public static void RegisterAllMonoBehaviours(object mod)
+    {
+        Assembly modAssembly = mod.GetType().Assembly;
+
+        foreach (Type type in modAssembly.GetTypes())
+        {
+            if (!type.IsClass)
+                continue;
+
+            if (!type.IsSubclassOf(typeof(MonoBehaviour)))
+                continue;
+
+            ClassInjector.RegisterTypeInIl2Cpp(type);
         }
     }
 

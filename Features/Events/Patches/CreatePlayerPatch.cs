@@ -14,7 +14,6 @@ public static class CreatePlayerPatch
 {
     public static void Prefix(ClientData clientData)
     {
-        Logger.LogDebug($"A player is about to be created! {clientData.PlayerName}", BepInExConfig.DebugMode);
         EventManager.ExecuteEvent(new PlayerJoining(clientData));
     }
 }

@@ -30,4 +30,27 @@ public class EventsHandler
     {
         LogMessage($"A player has disconnected from the game! Name: {ev.Player.Name}");
     }
+
+    [Event]
+    public void OnLocalPlayerDisconnected(LocalPlayerDisconnected ev)
+    {
+        LogMessage($"The LocalPlayer has disconnected from the game!");
+    }
+
+    [Event]
+    public void OnLobbyCountdownStarted(LobbyCountdownStarted ev)
+    {
+        LogMessage($"A lobby countdown has been started!");
+    }
+
+    [Event]
+    public bool OnLobbyCountdownStarting(LobbyCountdownStarting ev)
+    {
+        LogMessage($"A lobby countdown is about to start! If I'm the host, it's gonnna get cancelled");
+
+        if (Lobby.AmHost)
+            return false;
+
+        return true;
+    }
 }

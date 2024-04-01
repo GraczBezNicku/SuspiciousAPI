@@ -21,22 +21,15 @@ public static class PlayerControlStartPatch
 
     public static IEnumerator CallEventOnInitialization(PlayerControl ctrl)
     {
-        int timeoutFrames = 600;
-        while (timeoutFrames > 0)
+        while (ctrl != null)
         {
             yield return new WaitForEndOfFrame();
 
             if (ctrl.CurrentOutfit == null)
-            {
-                timeoutFrames--;
                 continue;
-            }
 
             if (ctrl.CurrentOutfit.IsIncomplete)
-            {
-                timeoutFrames--;
                 continue;
-            }
 
             EventManager.ExecuteEvent(new PlayerInitialized(Player.Get(ctrl)));
             break;
