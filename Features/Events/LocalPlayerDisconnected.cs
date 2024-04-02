@@ -11,7 +11,7 @@ namespace SuspiciousAPI.Features.Events;
 /// </summary>
 public class LocalPlayerDisconnected : PlayerDisconnected
 {
-    // FIXME: This should be a seperate class that does not return PlayerControl, since it may be null.
+    // FIXME: In the DisconnectInternal patch we need to determine the difference when a player disconnects from a LOBBY and the SERVER BROWSER
     public LocalPlayerDisconnected(Player player, DisconnectReasons disconnectReason) : base(player, disconnectReason)
     {
     }

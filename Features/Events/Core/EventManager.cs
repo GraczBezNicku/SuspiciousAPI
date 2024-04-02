@@ -43,10 +43,12 @@ public static class EventManager
             {
                 object returned = method.Invoke(EventHandlers[method.DeclaringType], new object[] { eventArgs });
 
+                Logger.LogDebug($"Is returned null? {returned == null}\nWhat's returned value as a bool? {(bool)returned}", BepInExConfig.DebugMode);
+
                 if (returned == null)
                     continue;
 
-                anyReturnedFalse = anyReturnedFalse ? true : (bool)returned;
+                anyReturnedFalse = anyReturnedFalse ? true : !(bool)returned;
             }
             catch (Exception ex)
             {
@@ -54,6 +56,7 @@ public static class EventManager
             }
         }
 
+        Logger.LogDebug($"Any returned false? {anyReturnedFalse}", BepInExConfig.DebugMode);
         return eventArgs.Cancellable ? !anyReturnedFalse : true;
     }
 

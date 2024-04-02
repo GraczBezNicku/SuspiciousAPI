@@ -12,55 +12,66 @@ using UnityEngine;
 
 namespace SuspiciousAPI.Features.Events.Patches;
 
-/*
-// I'm gonna keep this in case I need it, but for now there may be a few places where the lobbycountdownstarted event can go...
 [HarmonyPatch(typeof(GameStartManager))]
 public static class BeginGamePatches
 {
+    public static bool LastReturnValue = false;
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.BeginGame))]
+    public static bool BeginGamePrefix(GameStartManager __instance)
+    {
+        LastReturnValue = true;
+
+        if (__instance.startState != GameStartManager.StartingStates.NotStarting)
+            return true;
+
+        if (GameData.Instance.AllPlayers._size < __instance.MinPlayers)
+            return true;
+
+        if (!EventManager.ExecuteEvent(new LobbyCountdownStarting()))
+        {
+            LastReturnValue = false;
+            return false;
+        }
+
+        return true;
+    }
+
+    [HarmonyPrefix]
+    [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.ReallyBegin))]
+    public static bool ReallyBeginPrefix(GameStartManager __instance)
+    {
+        if (!EventManager.ExecuteEvent(new LobbyCountdownStarting()))
+        {
+            LastReturnValue = false;
+            return false;
+        }
+
+        LastReturnValue = true;
+        return true;
+    }
+
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.BeginGame))]
-    public static void BeginGamePatch(GameStartManager __instance)
+    public static void BeginGamePostfix(GameStartManager __instance)
     {
+        if (!LastReturnValue)
+            return;
+
         if (__instance.startState != GameStartManager.StartingStates.Countdown)
             return;
 
-        CoroutineHelper.Instance.StartCoroutine(PrintAfterTenFrames());
-
-        //EventManager.ExecuteEvent(new LobbyCountdownStarted(__instance));
-    }
-
-    public static IEnumerator PrintAfterTenFrames()
-    {
-        for (int i = 0; i <= 10; i++)
-        {
-            yield return new WaitForEndOfFrame();
-        }
-
-        TextMeshPro[] texts = UnityEngine.Object.FindObjectsOfType<TextMeshPro>();
-
-        Logger.LogMessage($"Any texts that matches starting: {texts.Any(x => x.text.Contains("Starting"))}");
-
-        foreach (TextMeshPro text in texts)
-        {
-            Logger.LogError(text.text);
-
-            if (text.text.Contains("Starting"))
-            {
-                Logger.LogMessage($"Starting TEXT:\n{text.gameObject.name}\n");
-                foreach (Component comp in text.gameObject.GetComponents<Component>())
-                {
-                    Logger.LogMessage($"Found comp: {comp.GetType()}\n");
-                }
-            }
-        }
+        EventManager.ExecuteEvent(new LobbyCountdownStarted());
     }
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.ReallyBegin))]
-    public static void ReallyBeginPatch(GameStartManager __instance)
+    public static void ReallyBeginPostfix(GameStartManager __instance)
     {
-        CoroutineHelper.Instance.StartCoroutine(PrintAfterTenFrames());
-        //EventManager.ExecuteEvent(new LobbyCountdownStarted(__instance));
+        if (!LastReturnValue)
+            return;
+
+        EventManager.ExecuteEvent(new LobbyCountdownStarted());
     }
 }
-*/
