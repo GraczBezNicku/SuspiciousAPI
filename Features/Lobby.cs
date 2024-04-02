@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace SuspiciousAPI.Features;
 
@@ -14,8 +15,11 @@ public class Lobby
 {
     public static bool AmHost => AmongUsClient.Instance.AmHost;
 
-    public static void StopLobbyCountdown()
+    public static void StopLobbyCountdown(bool bypassHost = false)
     {
+        if (!AmHost && !bypassHost)
+            return;
 
+        GameStartManager.Instance.ResetStartState();
     }
 }

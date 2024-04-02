@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace SuspiciousAPI.Features;
+namespace SuspiciousAPI.Features.Helpers.Unity;
 
 /// <summary>
 /// Contains events that make it possible to attach into a Unity method without the need of creating a <see cref="MonoBehaviour"/> instance.

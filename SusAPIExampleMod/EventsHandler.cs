@@ -46,11 +46,25 @@ public class EventsHandler
     [Event]
     public bool OnLobbyCountdownStarting(LobbyCountdownStarting ev)
     {
-        LogMessage($"A lobby countdown is about to start! If I'm the host, it's gonnna get cancelled");
-
-        if (Lobby.AmHost)
-            return false;
-
+        LogMessage($"A lobby countdown is about to start!");
         return true;
+    }
+
+    [Event]
+    public bool OnLobbyRoundStarting(LobbyRoundStarting ev)
+    {
+        LogMessage($"The round is about to start!");
+
+        if (!Lobby.AmHost)
+            return true;
+
+        //Lobby.StopLobbyCountdown();
+        return true;
+    }
+
+    [Event]
+    public void OnLobbyRoundStarted(LobbyRoundStarted ev)
+    {
+        LogMessage($"The round has started!");
     }
 }

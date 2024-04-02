@@ -43,8 +43,6 @@ public static class EventManager
             {
                 object returned = method.Invoke(EventHandlers[method.DeclaringType], new object[] { eventArgs });
 
-                Logger.LogDebug($"Is returned null? {returned == null}\nWhat's returned value as a bool? {(bool)returned}", BepInExConfig.DebugMode);
-
                 if (returned == null)
                     continue;
 

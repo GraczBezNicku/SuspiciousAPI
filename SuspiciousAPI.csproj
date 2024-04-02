@@ -91,23 +91,31 @@
     <Compile Include="BepInExConfig.cs" />
     <Compile Include="BepInExPlugin.cs" />
     <Compile Include="Features\Configs.cs" />
+    <Compile Include="Features\Contexts\Core\Context.cs" />
     <Compile Include="Features\CustomRPCs\Core\RpcManager.cs" />
     <Compile Include="Features\Events\Core\EventAttribute.cs" />
     <Compile Include="Features\Events\Core\EventBase.cs" />
     <Compile Include="Features\Events\Core\EventManager.cs" />
     <Compile Include="Features\Events\LobbyCountdownStarted.cs" />
     <Compile Include="Features\Events\LobbyCountdownStarting.cs" />
+    <Compile Include="Features\Events\LobbyRoundStarted.cs" />
+    <Compile Include="Features\Events\LobbyRoundStarting.cs" />
     <Compile Include="Features\Events\LocalPlayerDisconnected.cs" />
     <Compile Include="Features\Events\Patches\BeginGamePatches.cs" />
+    <Compile Include="Features\Events\Patches\CoStartGamePatches.cs" />
     <Compile Include="Features\Events\Patches\CreatePlayerPatch.cs" />
     <Compile Include="Features\Events\Patches\DisconnectInternalPatch.cs" />
     <Compile Include="Features\Events\Patches\EventsHandleRpcPatch.cs" />
     <Compile Include="Features\Events\Patches\OnPlayerLeftPatch.cs" />
     <Compile Include="Features\Events\Patches\PlayerControlStartPatch.cs" />
+    <Compile Include="Features\Events\Patches\StartGamePatches.cs" />
     <Compile Include="Features\Events\PlayerDisconnected.cs" />
     <Compile Include="Features\Events\PlayerInitialized.cs" />
     <Compile Include="Features\Events\PlayerJoining.cs" />
     <Compile Include="Features\Game.cs" />
+    <Compile Include="Features\Helpers\Unity\ObjectHelpers.cs" />
+    <Compile Include="Features\Helpers\Unity\Patches\GameObjectDestroyPatches.cs" />
+    <Compile Include="Features\Interactables\Core\Interactable.cs" />
     <Compile Include="Features\Lobby.cs" />
     <Compile Include="Features\Logger.cs" />
     <Compile Include="Features\ModLoader\Core\ModConfigAttribute.cs" />
@@ -116,9 +124,12 @@
     <Compile Include="Features\Patches\AmongUsClientAwakePatch.cs" />
     <Compile Include="Features\Player.cs" />
     <Compile Include="Features\Helpers\YAML.cs" />
-    <Compile Include="Features\UnityMethods.cs" />
+    <Compile Include="Features\Helpers\Unity\UnityMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Features\Contexts\Patches\" />
+    <Folder Include="Features\Interactables\Patches\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
