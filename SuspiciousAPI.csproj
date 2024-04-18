@@ -113,9 +113,12 @@
     <Compile Include="Features\Events\PlayerInitialized.cs" />
     <Compile Include="Features\Events\PlayerJoining.cs" />
     <Compile Include="Features\Game.cs" />
+    <Compile Include="Features\Helpers\AmongUs\IUsable\IUsableWrapper.cs" />
     <Compile Include="Features\Helpers\Unity\ObjectHelpers.cs" />
     <Compile Include="Features\Helpers\Unity\Patches\GameObjectDestroyPatches.cs" />
     <Compile Include="Features\Interactables\Core\Interactable.cs" />
+    <Compile Include="Features\Interactables\Core\InteractableCooldown.cs" />
+    <Compile Include="Features\Interactables\Patches\IUsablePatches.cs" />
     <Compile Include="Features\Lobby.cs" />
     <Compile Include="Features\Logger.cs" />
     <Compile Include="Features\ModLoader\Core\ModConfigAttribute.cs" />
@@ -129,7 +132,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Features\Contexts\Patches\" />
-    <Folder Include="Features\Interactables\Patches\" />
+    <Folder Include="Features\Helpers\AmongUs\IUsable\Patches\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Notes.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

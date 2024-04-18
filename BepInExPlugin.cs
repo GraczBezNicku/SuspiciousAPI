@@ -2,6 +2,7 @@
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using SuspiciousAPI.Features;
+using SuspiciousAPI.Features.Helpers.AmongUs.IUsable;
 using SuspiciousAPI.Features.ModLoader;
 using System;
 using System.IO;

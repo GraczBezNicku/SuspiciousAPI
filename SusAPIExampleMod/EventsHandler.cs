@@ -1,12 +1,15 @@
 ﻿using SuspiciousAPI.Features;
 using SuspiciousAPI.Features.Events;
 using SuspiciousAPI.Features.Events.Core;
+using SuspiciousAPI.Features.Interactables.Core;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using UnityEngine;
+using BepInEx.Unity.IL2CPP.Utils;
 using static SuspiciousAPI.Features.Logger;
 
 namespace SusAPIExampleMod;
@@ -66,5 +69,20 @@ public class EventsHandler
     public void OnLobbyRoundStarted(LobbyRoundStarted ev)
     {
         LogMessage($"The round has started!");
+
+        IEnumerator GetInteractable()
+        {
+            yield return new WaitForSeconds(10f);
+
+            Console console = null;
+
+            if (!GameObject.FindObjectOfType<Console>())
+                yield break;
+
+            console = GameObject.FindObjectOfType<Console>();
+            Interactable dummy = Interactable.Get(console.gameObject);
+        }
+
+        CoroutineHelper.Instance.StartCoroutine(GetInteractable());
     }
 }
