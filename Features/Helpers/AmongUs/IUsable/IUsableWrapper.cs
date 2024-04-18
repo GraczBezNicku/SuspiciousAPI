@@ -36,29 +36,27 @@ public class IUsableWrapper
 
         foreach (MethodInfo method in methods)
         {
-            if (method.ReturnType == Il2CppType.Of())
-
-            Logger.LogDebug($"{method.Name} (method)", BepInExConfig.DebugMode);
-            if (method.Name == "SetOutline" && method.ReturnType.Name == "void")
+            Logger.LogDebug($"{method.Name} (method; ReturnType: {method.ReturnType.Name})", BepInExConfig.DebugMode);
+            if (method.Name == "SetOutline" && method.ReturnType == Il2CppType.From(typeof(void)))
                 foundElements++;
 
-            if (method.Name == "CanUse" && method.ReturnType.Name == "float")
+            if (method.Name == "CanUse" && method.ReturnType == Il2CppType.From(typeof(float)))
                 foundElements++;
 
-            if (method.Name == "Use" && method.ReturnType.Name == "void")
+            if (method.Name == "Use" && method.ReturnType == Il2CppType.From(typeof(void)))
                 foundElements++;
         }
 
         foreach (PropertyInfo property in properties)
         {
-            Logger.LogDebug($"{property.Name} (property)", BepInExConfig.DebugMode);
-            if (property.Name == "UsableDistance" && property.PropertyType.Name == "float")
+            Logger.LogDebug($"{property.Name} (property; PropertyType: {property.PropertyType.Name})", BepInExConfig.DebugMode);
+            if (property.Name == "UsableDistance" && property.PropertyType == Il2CppType.From(typeof(float)))
                 foundElements++;
 
-            if (property.Name == "PercentCool" && property.PropertyType.Name == "float")
+            if (property.Name == "PercentCool" && property.PropertyType == Il2CppType.From(typeof(float)))
                 foundElements++;
 
-            if (property.Name == "UseIcon" && property.PropertyType.Name == "ImageNames")
+            if (property.Name == "UseIcon" && property.PropertyType == Il2CppType.From(typeof(ImageNames)))
                 foundElements++;
         }
 

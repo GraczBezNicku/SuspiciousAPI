@@ -5,9 +5,12 @@ using SuspiciousAPI.Features.Interactables.Patches;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+
+using static SuspiciousAPI.Features.Helpers.IL2CPP.TypeHelpers;
 
 namespace SuspiciousAPI.Features.Interactables.Core;
 
@@ -59,7 +62,10 @@ public class Interactable
         // We don't want to patch a method that's already patched, since patches are "global" so to speak. We do this dynamically for Custom Interactables to work.
         foreach (string methodName in targetMethods)
         {
-            var method = UsableScriptType.GetMethod(methodName);
+            string name = UsableScriptType.GetManagedType() == null ? "NULL" : UsableScriptType.GetManagedType().Name;
+            Logger.LogDebug($"ManagedType for {UsableScriptType.Name} is {name}", BepInExConfig.DebugMode);
+
+            var method = UsableScriptType.GetManagedType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
             if (method == null)
             {
@@ -69,13 +75,13 @@ public class Interactable
 
             var patches = Harmony.GetPatchInfo(method);
 
-            if (patches.Owners.Any(x => x == BepInExPlugin.Instance._harmony.Id))
+            if (patches != null && patches.Owners.Any(x => x == BepInExPlugin.Instance._harmony.Id))
             {
                 Logger.LogDebug($"This method seems to have already been patched by SusAPI. Skipping...", BepInExConfig.DebugMode);
                 continue;
             }
 
-            var patchMethod = typeof(IUsablePatches).GetMethod($"{method.Name}Prefix");
+            var patchMethod = typeof(IUsablePatches).GetMethod($"{method.Name}Prefix", BindingFlags.Public | BindingFlags.Static);
 
             if (patchMethod == null)
             {
@@ -90,14 +96,14 @@ public class Interactable
     /// <summary>
     /// Returns the original script's type. Used in conjunction with <see cref="Usable"/>
     /// </summary>
-    public Type UsableScriptType
+    public Il2CppSystem.Type UsableScriptType
     {
         get
         {
             return _usableScriptType;
         }
     }
-    private Type _usableScriptType;
+    private Il2CppSystem.Type _usableScriptType;
 
     /// <summary>
     /// Returns the original script belonging to said Usable. You'll need to cast it to the correct type using the <see cref="UsableScriptType"/> property. 
@@ -108,7 +114,7 @@ public class Interactable
         set
         {
             _usable = value;
-            _usableScriptType = value.GetType();
+            _usableScriptType = (value as Il2CppSystem.Object).GetIl2CppType();
             //usableOverrides = new IUsableOverrides();
         }
     }

@@ -114,6 +114,7 @@
     <Compile Include="Features\Events\PlayerJoining.cs" />
     <Compile Include="Features\Game.cs" />
     <Compile Include="Features\Helpers\AmongUs\IUsable\IUsableWrapper.cs" />
+    <Compile Include="Features\Helpers\IL2CPP\TypeHelpers.cs" />
     <Compile Include="Features\Helpers\Unity\ObjectHelpers.cs" />
     <Compile Include="Features\Helpers\Unity\Patches\GameObjectDestroyPatches.cs" />
     <Compile Include="Features\Interactables\Core\Interactable.cs" />
