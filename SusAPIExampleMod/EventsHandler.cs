@@ -72,15 +72,12 @@ public class EventsHandler
 
         IEnumerator GetInteractable()
         {
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(25f);
 
-            Console console = null;
-
-            if (!GameObject.FindObjectOfType<Console>())
-                yield break;
-
-            console = GameObject.FindObjectOfType<Console>();
-            Interactable dummy = Interactable.Get(console.gameObject);
+            foreach (Interactable i in Interactable.GetInteractables())
+            {
+                i.UseIcon = ImageNames.CamsButton;
+            }
         }
 
         CoroutineHelper.Instance.StartCoroutine(GetInteractable());

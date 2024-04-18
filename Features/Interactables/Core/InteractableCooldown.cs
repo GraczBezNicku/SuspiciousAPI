@@ -16,4 +16,9 @@ public class InteractableCooldown : Interactable
     {
 
     }
+
+    protected void PrepareValues()
+    {
+
+    }
 }

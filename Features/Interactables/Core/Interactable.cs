@@ -35,6 +35,14 @@ public class Interactable
             throw new InvalidOperationException("Usable object must implement IUsable interface!");
 
         Usable = usable;
+    }
+
+    /// <summary>
+    /// Prepares all patches and values for the <see cref="Interactable"/> object.
+    /// </summary>
+    private void Init()
+    {
+        PrepareValues();
         PreparePatches();
     }
 
@@ -43,7 +51,6 @@ public class Interactable
     /// </summary>
     private void PreparePatches()
     {
-        // FIXME: CHECK THIS!
         Logger.LogMessage($"Starting patches for {(Usable as Component).gameObject.name}!");
         string[] targetMethods =
         {
@@ -62,14 +69,11 @@ public class Interactable
         // We don't want to patch a method that's already patched, since patches are "global" so to speak. We do this dynamically for Custom Interactables to work.
         foreach (string methodName in targetMethods)
         {
-            string name = UsableScriptType.GetManagedType() == null ? "NULL" : UsableScriptType.GetManagedType().Name;
-            Logger.LogDebug($"ManagedType for {UsableScriptType.Name} is {name}", BepInExConfig.DebugMode);
-
             var method = UsableScriptType.GetManagedType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
             if (method == null)
             {
-                Logger.LogError($"A pressumed IUsable script lacks an IUsable method! ({methodName})");
+                Logger.LogError($"A presumed IUsable script lacks an IUsable method! ({methodName})");
                 continue;
             }
 
@@ -85,11 +89,73 @@ public class Interactable
 
             if (patchMethod == null)
             {
-                Logger.LogError($"Tried patching a method that doesn't exist! ({method.Name}Prefix)");
+                Logger.LogError($"Tried patching with a method that doesn't exist! ({method.Name}Prefix)");
                 continue;
             }
 
             BepInExPlugin.Instance._harmony.Patch(method, new HarmonyMethod(patchMethod));
+        }
+
+        foreach (string propertyName in targetProperties)
+        {
+            var property = UsableScriptType.GetManagedType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+
+            if (property == null)
+            {
+                Logger.LogError($"A presumed IUsable script lacks a IUsable property! ({propertyName})");
+                continue;
+            }
+
+            var patches = Harmony.GetPatchInfo(property.GetGetMethod());
+
+            if (patches != null && patches.Owners.Any(x => x == BepInExPlugin.Instance._harmony.Id))
+            {
+                Logger.LogDebug($"This property seems to have already been patched by SusAPI. Skipping...", BepInExConfig.DebugMode);
+                continue;
+            }
+
+            var patchMethod = typeof(IUsablePatches).GetMethod($"{propertyName}Prefix", BindingFlags.Public | BindingFlags.Static);
+
+            if (patchMethod == null)
+            {
+                Logger.LogError($"Tried patching with a method that doesn't exist! ({propertyName}Prefix)");
+                continue;
+            }
+
+            BepInExPlugin.Instance._harmony.Patch(property.GetGetMethod(), new HarmonyMethod(patchMethod));
+        }
+    }
+
+    /// <summary>
+    /// Prepares the freshly created Interactable by setting its values to the base-game object's values. This method assumes that the provided <see cref="Usable"/> is a valid IUsable.
+    /// </summary>
+    private void PrepareValues()
+    {
+        string[] targetProperties =
+{
+            "UsableDistance",
+            "PercentCool",
+            "UseIcon"
+        };
+
+        foreach (string propertyName in targetProperties)
+        {
+            Il2CppSystem.Reflection.PropertyInfo property = UsableScriptType.GetProperty(propertyName, Il2CppSystem.Reflection.BindingFlags.Public | Il2CppSystem.Reflection.BindingFlags.Instance);
+
+            if (property == null)
+            {
+                Logger.LogError($"A presumed IUsable script lacks a IUsable property! ({propertyName})");
+                continue;
+            }
+
+            Il2CppSystem.Object value = property.GetValue(Usable as Il2CppSystem.Object);
+
+            switch (propertyName)
+            {
+                case "UsableDistance": UsableDistance = value.Unbox<float>(); break;
+                case "PercentCool": PercentCool = value.Unbox<float>(); break;
+                case "UseIcon": UseIcon = value.Unbox<ImageNames>(); break;
+            }
         }
     }
 
@@ -111,30 +177,91 @@ public class Interactable
     public object Usable
     {
         get => _usable;
-        set
+        private set
         {
             _usable = value;
             _usableScriptType = (value as Il2CppSystem.Object).GetIl2CppType();
-            //usableOverrides = new IUsableOverrides();
         }
     }
     private object _usable;
 
-    /*
-    public float MaxDistance
+    /// <summary>
+    /// Gets or sets the distance an Interactable can be used from.
+    /// </summary>
+    public float UsableDistance
     {
-        get => usableOverrides.UsableDistance;
-        set => usableOverrides.UsableDistance = value;
+        get => _usableDistance;
+        set => _usableDistance = value;
     }
-    */
+    private float _usableDistance;
+
+    public float PercentCool
+    {
+        get => _percentCool;
+        set => _percentCool = value;
+    }
+    private float _percentCool;
 
     /// <summary>
-    /// Gets the FIRST <see cref="Interactable"> object present on a <see cref="GameObject"/>.
+    /// Gets or sets the use icon an Interactable uses.
+    /// </summary>
+    public ImageNames UseIcon
+    {
+        get => _useIcon;
+        set => _useIcon = value;
+    }
+    private ImageNames _useIcon;
+
+    /// <summary>
+    /// Gets all the <see cref="Interactable"/> objects present on the map.
+    /// </summary>
+    /// <returns></returns>
+    public static IEnumerable<Interactable> GetInteractables()
+    {
+        List<Interactable> interactables = new List<Interactable>();
+
+        ShipStatus map = UnityEngine.Object.FindObjectOfType<ShipStatus>();
+
+        if (map == null)
+            return interactables;
+
+        List<GameObject> childObjects = new List<GameObject>();
+
+        foreach (Component comp in map.gameObject.GetComponentsInChildren<Transform>())
+        {
+            childObjects.Add(comp.gameObject);
+        }
+
+        foreach (GameObject obj in childObjects)
+        {
+            Interactable interactable = Get(obj);
+
+            if (interactable == null)
+                continue;
+
+            interactables.Add(interactable);
+        }
+
+        return interactables;
+    }
+
+    /// <summary>
+    /// Gets the FIRST <see cref="Interactable"/> object present on a <see cref="GameObject"/> that this <see cref="Component"/> belongs to. 
+    /// </summary>
+    /// <param name="component"></param>
+    /// <returns></returns>
+    public static Interactable Get(Component component) => Get(component.gameObject);
+
+    /// <summary>
+    /// Gets the FIRST <see cref="Interactable"/> object present on a <see cref="GameObject"/>.
     /// </summary>
     /// <param name="gameObject"></param>
-    /// <returns><see cref="Interactable"> if found, <see langword="null"/> if not.</see></returns>
+    /// <returns><see cref="Interactable"/> if found, <see langword="null"/> if not.</returns>
     public static Interactable Get(GameObject gameObject)
     {
+        if (gameObject == null)
+            return null;
+
         if (GameObjectToInteractable.ContainsKey(gameObject))
             return GameObjectToInteractable[gameObject];
 
@@ -158,54 +285,7 @@ public class Interactable
             return null;
 
         GameObjectToInteractable.Add(gameObject, interactable);
+        interactable.Init();
         return GameObjectToInteractable[gameObject];
     }
 }
-
-/*
-public struct IUsableOverrides
-{
-    private float _usableDistance = 0;
-    private ImageNames _useIcon = ImageNames.UseButton;
-    private float _percentCool = 0;
-
-    public float UsableDistance
-    {
-        get => _usableDistance;
-        set
-        {
-            _usableDistance = value;
-            isDistanceOverriden = true;
-        }
-    }
-
-    public ImageNames UseIcon
-    {
-        get => _useIcon;
-        set
-        {
-            _useIcon = value;
-            isIconOverriden = true;
-        }
-    }
-
-    public float PercentCool
-    {
-        get => _percentCool;
-        set
-        {
-            _percentCool = value;
-            isPercentOverriden = true;
-        }
-    }
-
-    public bool isDistanceOverriden = false;
-    public bool isIconOverriden = false;
-    public bool isPercentOverriden = false;
-
-    public IUsableOverrides()
-    {
-
-    }
-}
-*/

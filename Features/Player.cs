@@ -58,7 +58,12 @@ public class Player
 
         foreach (PlayerControl ctrl in PlayerControl.AllPlayerControls)
         {
-            players.Add(Get(ctrl));
+            Player p = Get(ctrl);
+
+            if (p == null)
+                continue;
+
+            players.Add(p);
         }
 
         return players;
