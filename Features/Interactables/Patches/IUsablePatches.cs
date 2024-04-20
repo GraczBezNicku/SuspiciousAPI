@@ -17,14 +17,10 @@ public static class IUsablePatches
         return true;
     }
 
+    // FIXME: 
     public static bool UseIconPrefix(object __instance, ref ImageNames __result)
     {
-        Interactable interactable = Interactable.Get(__instance as UnityEngine.Component);
-
-        if (interactable == null)
-            return true;
-
-        __result = interactable.UseIcon;
-        return false;
+        __result = ImageNames.CamsButton;
+        return true;
     }
 }

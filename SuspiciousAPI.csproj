@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
@@ -55,9 +57,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>References\Il2CppInterop.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Il2CppInterop.Runtime, Version=1.4.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>References\Il2CppInterop.Runtime.dll</HintPath>
+    <Reference Include="Il2CppInterop.Runtime_publicized">
+      <HintPath>References\publicized_assemblies\Il2CppInterop.Runtime_publicized.dll</HintPath>
     </Reference>
     <Reference Include="Il2Cppmscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="Il2CppSystem">

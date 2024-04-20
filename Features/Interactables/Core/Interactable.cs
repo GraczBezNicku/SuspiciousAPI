@@ -1,8 +1,10 @@
-﻿using HarmonyLib;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using HarmonyLib;
 using Il2CppInterop.Runtime;
 using SuspiciousAPI.Features.Helpers.AmongUs.IUsable;
 using SuspiciousAPI.Features.Interactables.Patches;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -42,8 +44,15 @@ public class Interactable
     /// </summary>
     private void Init()
     {
-        PrepareValues();
-        PreparePatches();
+        try
+        {
+            PrepareValues();
+            PreparePatches();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError($"Caught an exception in Interactable::Init()\n{ex}");
+        }
     }
 
     /// <summary>
@@ -69,7 +78,7 @@ public class Interactable
         // We don't want to patch a method that's already patched, since patches are "global" so to speak. We do this dynamically for Custom Interactables to work.
         foreach (string methodName in targetMethods)
         {
-            var method = UsableScriptType.GetManagedType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
+            var method = UsableScriptType.GetManagedType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public).GetDeclaredMember();
 
             if (method == null)
             {
@@ -81,7 +90,7 @@ public class Interactable
 
             if (patches != null && patches.Owners.Any(x => x == BepInExPlugin.Instance._harmony.Id))
             {
-                Logger.LogDebug($"This method seems to have already been patched by SusAPI. Skipping...", BepInExConfig.DebugMode);
+                Logger.LogMessage($"This method seems to have already been patched by SusAPI. Skipping...");
                 continue;
             }
 
@@ -93,12 +102,15 @@ public class Interactable
                 continue;
             }
 
-            BepInExPlugin.Instance._harmony.Patch(method, new HarmonyMethod(patchMethod));
+            PatchProcessor proc = BepInExPlugin.Instance._harmony.CreateProcessor(method);
+            proc.AddPrefix(patchMethod);
+            proc.Patch();
+            //BepInExPlugin.Instance._harmony.Patch(method, new HarmonyMethod(patchMethod));
         }
 
         foreach (string propertyName in targetProperties)
         {
-            var property = UsableScriptType.GetManagedType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+            var property = UsableScriptType.GetManagedType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public).GetDeclaredMember();
 
             if (property == null)
             {
@@ -110,7 +122,7 @@ public class Interactable
 
             if (patches != null && patches.Owners.Any(x => x == BepInExPlugin.Instance._harmony.Id))
             {
-                Logger.LogDebug($"This property seems to have already been patched by SusAPI. Skipping...", BepInExConfig.DebugMode);
+                Logger.LogMessage($"This property seems to have already been patched by SusAPI. Skipping...");
                 continue;
             }
 
@@ -122,7 +134,10 @@ public class Interactable
                 continue;
             }
 
-            BepInExPlugin.Instance._harmony.Patch(property.GetGetMethod(), new HarmonyMethod(patchMethod));
+            PatchProcessor proc = BepInExPlugin.Instance._harmony.CreateProcessor(property.GetGetMethod());
+            proc.AddPrefix(patchMethod);
+            proc.Patch();
+            //BepInExPlugin.Instance._harmony.Patch(property.GetGetMethod(), new HarmonyMethod(patchMethod));
         }
     }
 
@@ -234,7 +249,7 @@ public class Interactable
 
         foreach (GameObject obj in childObjects)
         {
-            Interactable interactable = Get(obj);
+            Interactable interactable = Get(obj, autoInit: false);
 
             if (interactable == null)
                 continue;
@@ -242,6 +257,7 @@ public class Interactable
             interactables.Add(interactable);
         }
 
+        interactables.ForEach(x => x.Init());
         return interactables;
     }
 
@@ -257,7 +273,7 @@ public class Interactable
     /// </summary>
     /// <param name="gameObject"></param>
     /// <returns><see cref="Interactable"/> if found, <see langword="null"/> if not.</returns>
-    public static Interactable Get(GameObject gameObject)
+    public static Interactable Get(GameObject gameObject, bool autoInit = true)
     {
         if (gameObject == null)
             return null;
@@ -285,7 +301,10 @@ public class Interactable
             return null;
 
         GameObjectToInteractable.Add(gameObject, interactable);
-        interactable.Init();
+
+        if (autoInit)
+            interactable.Init();
+
         return GameObjectToInteractable[gameObject];
     }
 }
