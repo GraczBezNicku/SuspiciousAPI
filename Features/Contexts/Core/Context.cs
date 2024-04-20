@@ -1,9 +1,9 @@
-﻿using System;
+﻿using SuspiciousAPI.Features.Interactables.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SuspiciousAPI.Features.Interactables.Core;
 
 namespace SuspiciousAPI.Features.Contexts.Core;
 

@@ -1,38 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6FA06FBC-A245-4C73-919A-AB466EACA898}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SuspiciousAPI</RootNamespace>
-    <AssemblyName>SuspiciousAPI</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <LangVersion>10</LangVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="References\**" />
+    <Compile Remove="SusAPIExampleMod\**" />
+    <EmbeddedResource Remove="References\**" />
+    <EmbeddedResource Remove="SusAPIExampleMod\**" />
+    <None Remove="References\**" />
+    <None Remove="SusAPIExampleMod\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".gitattributes" />
+    <None Remove=".gitignore" />
+  </ItemGroup>
+
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>References\0Harmony.dll</HintPath>
@@ -46,98 +34,33 @@
     <Reference Include="BepInEx.Unity.IL2CPP">
       <HintPath>References\BepInEx.Unity.IL2CPP.dll</HintPath>
     </Reference>
-    <Reference Include="Cpp2IL.Core">
-      <HintPath>References\Cpp2IL.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Hazel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Hazel">
       <HintPath>References\Hazel.dll</HintPath>
     </Reference>
-    <Reference Include="Il2CppInterop.Common, Version=1.4.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Il2CppInterop.Common">
       <HintPath>References\Il2CppInterop.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Il2CppInterop.Runtime_publicized">
-      <HintPath>References\publicized_assemblies\Il2CppInterop.Runtime_publicized.dll</HintPath>
+    <Reference Include="Il2CppInterop.Runtime">
+      <HintPath>References\Il2CppInterop.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Il2Cppmscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="Il2CppSystem">
-      <HintPath>References\Il2CppSystem.dll</HintPath>
+    <Reference Include="Il2Cppmscorlib">
+      <HintPath>References\Il2Cppmscorlib.dll</HintPath>
     </Reference>
     <Reference Include="LibCpp2IL">
       <HintPath>References\LibCpp2IL.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Unity.TextMeshPro">
       <HintPath>References\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>References\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
-    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>References\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>References\YamlDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BepInExConfig.cs" />
-    <Compile Include="BepInExPlugin.cs" />
-    <Compile Include="Features\Configs.cs" />
-    <Compile Include="Features\Contexts\Core\Context.cs" />
-    <Compile Include="Features\CustomRPCs\Core\RpcManager.cs" />
-    <Compile Include="Features\Events\Core\EventAttribute.cs" />
-    <Compile Include="Features\Events\Core\EventBase.cs" />
-    <Compile Include="Features\Events\Core\EventManager.cs" />
-    <Compile Include="Features\Events\LobbyCountdownStarted.cs" />
-    <Compile Include="Features\Events\LobbyCountdownStarting.cs" />
-    <Compile Include="Features\Events\LobbyRoundStarted.cs" />
-    <Compile Include="Features\Events\LobbyRoundStarting.cs" />
-    <Compile Include="Features\Events\LocalPlayerDisconnected.cs" />
-    <Compile Include="Features\Events\Patches\BeginGamePatches.cs" />
-    <Compile Include="Features\Events\Patches\CoStartGamePatches.cs" />
-    <Compile Include="Features\Events\Patches\CreatePlayerPatch.cs" />
-    <Compile Include="Features\Events\Patches\DisconnectInternalPatch.cs" />
-    <Compile Include="Features\Events\Patches\EventsHandleRpcPatch.cs" />
-    <Compile Include="Features\Events\Patches\OnPlayerLeftPatch.cs" />
-    <Compile Include="Features\Events\Patches\PlayerControlStartPatch.cs" />
-    <Compile Include="Features\Events\Patches\StartGamePatches.cs" />
-    <Compile Include="Features\Events\PlayerDisconnected.cs" />
-    <Compile Include="Features\Events\PlayerInitialized.cs" />
-    <Compile Include="Features\Events\PlayerJoining.cs" />
-    <Compile Include="Features\Game.cs" />
-    <Compile Include="Features\Helpers\AmongUs\IUsable\IUsableWrapper.cs" />
-    <Compile Include="Features\Helpers\IL2CPP\TypeHelpers.cs" />
-    <Compile Include="Features\Helpers\Unity\ObjectHelpers.cs" />
-    <Compile Include="Features\Helpers\Unity\Patches\GameObjectDestroyPatches.cs" />
-    <Compile Include="Features\Interactables\Core\Interactable.cs" />
-    <Compile Include="Features\Interactables\Core\InteractableCooldown.cs" />
-    <Compile Include="Features\Interactables\Patches\IUsablePatches.cs" />
-    <Compile Include="Features\Lobby.cs" />
-    <Compile Include="Features\Logger.cs" />
-    <Compile Include="Features\ModLoader\Core\ModConfigAttribute.cs" />
-    <Compile Include="Features\ModLoader\Core\SusMod.cs" />
-    <Compile Include="Features\ModLoader\ModLoader.cs" />
-    <Compile Include="Features\Patches\AmongUsClientAwakePatch.cs" />
-    <Compile Include="Features\Player.cs" />
-    <Compile Include="Features\Helpers\YAML.cs" />
-    <Compile Include="Features\Helpers\Unity\UnityMethods.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Features\Contexts\Patches\" />
-    <Folder Include="Features\Helpers\AmongUs\IUsable\Patches\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Notes.txt" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

@@ -63,17 +63,17 @@ public class Interactable
         Logger.LogMessage($"Starting patches for {(Usable as Component).gameObject.name}!");
         string[] targetMethods =
         {
-            "SetOutline",
-            "CanUse",
-            "Use"
-        };
+                "SetOutline",
+                "CanUse",
+                "Use"
+            };
 
         string[] targetProperties =
         {
-            "UsableDistance",
-            "PercentCool",
-            "UseIcon"
-        };
+                "UsableDistance",
+                "PercentCool",
+                "UseIcon"
+            };
 
         // We don't want to patch a method that's already patched, since patches are "global" so to speak. We do this dynamically for Custom Interactables to work.
         foreach (string methodName in targetMethods)
@@ -148,10 +148,10 @@ public class Interactable
     {
         string[] targetProperties =
 {
-            "UsableDistance",
-            "PercentCool",
-            "UseIcon"
-        };
+                "UsableDistance",
+                "PercentCool",
+                "UseIcon"
+            };
 
         foreach (string propertyName in targetProperties)
         {

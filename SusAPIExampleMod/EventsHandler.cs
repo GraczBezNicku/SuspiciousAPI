@@ -70,6 +70,7 @@ public class EventsHandler
     {
         LogMessage($"The round has started!");
 
+        /*
         IEnumerator GetInteractable()
         {
             yield return new WaitForSeconds(25f);
@@ -81,5 +82,6 @@ public class EventsHandler
         }
 
         CoroutineHelper.Instance.StartCoroutine(GetInteractable());
+        */
     }
 }

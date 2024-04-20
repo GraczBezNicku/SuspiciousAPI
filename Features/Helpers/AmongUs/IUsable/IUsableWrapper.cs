@@ -1,16 +1,128 @@
-﻿using Il2CppInterop.Runtime;
+﻿using HarmonyLib;
+using Il2CppInterop.Runtime;
 using Il2CppSystem.Reflection;
+using SuspiciousAPI.Features.Helpers.IL2CPP;
+using SuspiciousAPI.Features.Interactables.Patches;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SuspiciousAPI.Features.Helpers.AmongUs.IUsable;
 
 public class IUsableWrapper
 {
-    private static List<Il2CppSystem.Type> KnownIUsableImplementers = new List<Il2CppSystem.Type>();
-    private static List<Il2CppSystem.Type> KnownIUsableCooldownImplementers = new List<Il2CppSystem.Type>();
+    public static readonly Type[] BaseGameIUsableImplementers =
+    {
+            typeof(Console),
+            typeof(DeconControl),
+            typeof(DoorConsole),
+            typeof(MapConsole),
+            typeof(OpenDoorConsole),
+            typeof(OptionsConsole),
+            typeof(PlatformConsole),
+            typeof(SystemConsole),
+            typeof(Vent)
+        };
 
-    private static List<Il2CppSystem.Type> IUsableBlacklistedTypes = new List<Il2CppSystem.Type>();
-    private static List<Il2CppSystem.Type> IUsableCooldownBlacklistedTypes = new List<Il2CppSystem.Type>();
+    public static readonly Type[] BaseGameIUsableCoolDownImplementers =
+    {
+            typeof(Ladder),
+            typeof(ZiplineConsole)
+        };
+
+    private static readonly string[] _IUsablePatchTargets =
+    {
+            "M_SetOutline",
+            "M_CanUse",
+            "M_Use",
+            "P_UsableDistance",
+            "P_PercentCool",
+            "P_UseIcon"
+        };
+
+    private static readonly string[] _IUsableCoolDownPatchTargets =
+    {
+            "M_IsCoolingDown",
+            "P_CoolDown",
+            "P_MaxCoolDown"
+        };
+
+    // zrob liste IUsablePatchTargets i IUsableCoolDownPatchTargets (nazwy metod i property)
+    private static List<Type> KnownIUsableImplementers = new List<Type>();
+    private static List<Type> KnownIUsableCooldownImplementers = new List<Type>();
+
+    private static List<Type> IUsableBlacklistedTypes = new List<Type>();
+    private static List<Type> IUsableCooldownBlacklistedTypes = new List<Type>();
+
+    /// <summary>
+    /// Registers all IUsable / IUsableCoolDown implementers in the provided <see cref="Type"/> array.
+    /// </summary>
+    /// <param name="assembly"></param>
+    public static void RegisterUsables(Type[] types)
+    {
+        foreach (Type type in types)
+        {
+            ImplementsIUsableCoolDown(Il2CppType.From(type));
+        }
+
+        if (!types.Any(x => KnownIUsableCooldownImplementers.Contains(x) || KnownIUsableImplementers.Contains(x)))
+            return;
+
+        Type[] IUsableImplementers = KnownIUsableImplementers.Where(x => types.Contains(x)).ToArray();
+
+        void PatchAllTargets(Type type, string[] targets)
+        {
+            foreach (string patchTarget in targets)
+            {
+                try
+                {
+                    bool isProperty = patchTarget.StartsWith("P_");
+                    string trueName = patchTarget.Substring(2, patchTarget.Length - 2);
+
+                    System.Reflection.PropertyInfo _backingProperty = type.GetProperty(trueName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+
+                    System.Reflection.MethodBase target = isProperty
+                        ? (_backingProperty == null ? null : _backingProperty.GetGetMethod())
+                        : type.GetMethod(trueName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+
+                    if (target == null)
+                    {
+                        Logger.LogError($"A presummed IUsable implementer lacks an IUsable element ({trueName})");
+                        continue;
+                    }
+
+                    var patches = Harmony.GetPatchInfo(target);
+
+                    if (patches != null && patches.Owners.Any(x => x == BepInExPlugin.Instance._harmony.Id))
+                    {
+                        Logger.LogMessage($"This method seems to have already been patched by SusAPI. Skipping...");
+                        continue;
+                    }
+
+                    var patchMethod = typeof(IUsablePatches).GetMethod($"{trueName}Prefix", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+
+                    if (patchMethod == null)
+                    {
+                        Logger.LogError($"Tried patching with a method that doesn't exist! ({trueName}Prefix)");
+                        continue;
+                    }
+
+                    BepInExPlugin.Instance._harmony.Patch(target, prefix: new HarmonyMethod(patchMethod));
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Failed patching for a specified patch target!\n{ex.Message}\n{ex.StackTrace}\n{ex.Source}\n{ex.InnerException}");
+                    continue;
+                }
+            }
+        }
+
+        foreach (Type type in IUsableImplementers)
+        {
+            PatchAllTargets(type, _IUsablePatchTargets);
+            PatchAllTargets(type, _IUsableCoolDownPatchTargets);
+        }
+    }
 
     /// <summary>
     /// Checks if the provided type implements IUsable. Technically it can be tricked by using override methods, but the base game doesn't do that.
@@ -19,15 +131,15 @@ public class IUsableWrapper
     /// <returns><see langword="true"/> if the type implements IUsable, <see langword="false"/> if not.</returns>
     public static bool ImplementsIUsable(Il2CppSystem.Type type)
     {
-        if (KnownIUsableImplementers.Contains(type))
+        if (KnownIUsableImplementers.Contains(type.GetManagedType()))
             return true;
 
-        if (IUsableBlacklistedTypes.Contains(type))
+        if (IUsableBlacklistedTypes.Contains(type.GetManagedType()))
             return false;
 
         PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
         MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-         
+
         if (BepInExConfig.DebugMode)
         {
             FieldInfo[] publicFields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
@@ -74,14 +186,14 @@ public class IUsableWrapper
 
         Logger.LogMessage($"Found elements for type {type.Name}: {foundElements}");
 
-        if (foundElements < 6 && !IUsableBlacklistedTypes.Contains(type))
+        if (foundElements < 6 && !IUsableBlacklistedTypes.Contains(type.GetManagedType()))
         {
-            IUsableBlacklistedTypes.Add(type);
+            IUsableBlacklistedTypes.Add(type.GetManagedType());
         }
 
-        if (foundElements >= 6 && !KnownIUsableImplementers.Contains(type))
+        if (foundElements >= 6 && !KnownIUsableImplementers.Contains(type.GetManagedType()))
         {
-            KnownIUsableImplementers.Add(type);
+            KnownIUsableImplementers.Add(type.GetManagedType());
         }
 
         return foundElements >= 6;
@@ -94,10 +206,10 @@ public class IUsableWrapper
     /// <returns><see langword="true"/> if the type implements IUsableCoolDown, <see langword="false"/> if not.</returns>
     public static bool ImplementsIUsableCoolDown(Il2CppSystem.Type type)
     {
-        if (KnownIUsableCooldownImplementers.Contains(type))
+        if (KnownIUsableCooldownImplementers.Contains(type.GetManagedType()))
             return true;
 
-        if (IUsableCooldownBlacklistedTypes.Contains(type))
+        if (IUsableCooldownBlacklistedTypes.Contains(type.GetManagedType()))
             return false;
 
         if (!ImplementsIUsable(type))
@@ -125,14 +237,14 @@ public class IUsableWrapper
                 foundElements++;
         }
 
-        if (foundElements < 3 && !IUsableCooldownBlacklistedTypes.Contains(type))
+        if (foundElements < 3 && !IUsableCooldownBlacklistedTypes.Contains(type.GetManagedType()))
         {
-            IUsableCooldownBlacklistedTypes.Add(type);
+            IUsableCooldownBlacklistedTypes.Add(type.GetManagedType());
         }
 
-        if (foundElements >= 3 && !KnownIUsableCooldownImplementers.Contains(type))
+        if (foundElements >= 3 && !KnownIUsableCooldownImplementers.Contains(type.GetManagedType()))
         {
-            KnownIUsableCooldownImplementers.Add(type);
+            KnownIUsableCooldownImplementers.Add(type.GetManagedType());
         }
 
         return foundElements >= 3;

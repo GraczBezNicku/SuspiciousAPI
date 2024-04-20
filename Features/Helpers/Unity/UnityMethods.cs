@@ -31,7 +31,7 @@ public class UnityMethods : MonoBehaviour
         OnLateUpdate?.Invoke();
     }
 
-    public void FixedUpdate() 
+    public void FixedUpdate()
     {
         OnFixedUpdate?.Invoke();
     }

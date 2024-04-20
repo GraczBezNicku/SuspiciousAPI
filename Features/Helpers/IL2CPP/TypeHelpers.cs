@@ -24,10 +24,10 @@ public static class TypeHelpers
         Type typeToReturn = null;
         Assembly[] allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-        foreach (Assembly ass in allAssemblies) 
+        foreach (Assembly ass in allAssemblies)
         {
-            Type[] types; 
-            
+            Type[] types;
+
             try
             {
                 types = ass.GetTypes();

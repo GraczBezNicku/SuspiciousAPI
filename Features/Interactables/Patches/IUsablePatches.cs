@@ -17,7 +17,6 @@ public static class IUsablePatches
         return true;
     }
 
-    // FIXME: 
     public static bool UseIconPrefix(object __instance, ref ImageNames __result)
     {
         __result = ImageNames.CamsButton;

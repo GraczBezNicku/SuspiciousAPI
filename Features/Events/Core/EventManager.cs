@@ -75,7 +75,7 @@ public static class EventManager
             {
                 if (!IsValidEvent(method, out var eventType))
                     continue;
-                
+
                 if (!EventHandlers.ContainsKey(type))
                     EventHandlers.Add(type, Activator.CreateInstance(type));
 

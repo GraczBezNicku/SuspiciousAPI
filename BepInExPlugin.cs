@@ -30,6 +30,9 @@ public class BepInExPlugin : BasePlugin
         _harmony = new Harmony($"GBN-SUSPICIOUSAPI");
         _harmony.PatchAll();
 
+        IUsableWrapper.RegisterUsables(IUsableWrapper.BaseGameIUsableImplementers);
+        IUsableWrapper.RegisterUsables(IUsableWrapper.BaseGameIUsableCoolDownImplementers);
+
         SetupDirectories();
 
         ModLoader.LoadAllMods();
@@ -64,3 +67,4 @@ public class BepInExPlugin : BasePlugin
             Directory.CreateDirectory($@"{Paths.GameRootPath}\SusAPI\Dependencies");
     }
 }
+
