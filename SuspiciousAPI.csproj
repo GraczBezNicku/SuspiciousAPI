@@ -22,9 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>References\0Harmony.dll</HintPath>
-    </Reference>
+    <PackageReference Include="HarmonyX" Version="2.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>References\Assembly-CSharp.dll</HintPath>
     </Reference>

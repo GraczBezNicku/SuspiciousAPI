@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
+using HarmonyLib.Tools;
 using SuspiciousAPI.Features;
 using SuspiciousAPI.Features.Helpers.AmongUs.IUsable;
 using SuspiciousAPI.Features.ModLoader;
@@ -29,9 +30,6 @@ public class BepInExPlugin : BasePlugin
 
         _harmony = new Harmony($"GBN-SUSPICIOUSAPI");
         _harmony.PatchAll();
-
-        IUsableWrapper.RegisterUsables(IUsableWrapper.BaseGameIUsableImplementers);
-        IUsableWrapper.RegisterUsables(IUsableWrapper.BaseGameIUsableCoolDownImplementers);
 
         SetupDirectories();
 

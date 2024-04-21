@@ -12,11 +12,6 @@ public class InteractableCooldown : Interactable
     {
     }
 
-    protected void PreparePatches()
-    {
-
-    }
-
     protected void PrepareValues()
     {
 

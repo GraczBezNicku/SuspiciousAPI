@@ -33,9 +33,6 @@ public class Interactable
         if (usable is not Il2CppSystem.Object obj)
             throw new InvalidOperationException("Provided usable must exist in the IL2CPP runtime! Use Components!");
 
-        if (!IUsableWrapper.ImplementsIUsable(obj.GetIl2CppType()))
-            throw new InvalidOperationException("Usable object must implement IUsable interface!");
-
         Usable = usable;
     }
 
@@ -47,7 +44,7 @@ public class Interactable
         try
         {
             PrepareValues();
-            PreparePatches();
+            //PreparePatches();
         }
         catch (Exception ex)
         {
@@ -55,6 +52,7 @@ public class Interactable
         }
     }
 
+    /*
     /// <summary>
     /// Prepares the freshly created Interactable object to be compatible. This method assumes that the provided <see cref="Usable"/> is a valid IUsable.
     /// </summary>
@@ -63,17 +61,17 @@ public class Interactable
         Logger.LogMessage($"Starting patches for {(Usable as Component).gameObject.name}!");
         string[] targetMethods =
         {
-                "SetOutline",
-                "CanUse",
-                "Use"
-            };
+            "SetOutline",
+            "CanUse",
+            "Use"
+        };
 
         string[] targetProperties =
         {
-                "UsableDistance",
-                "PercentCool",
-                "UseIcon"
-            };
+            "UsableDistance",
+            "PercentCool",
+            "UseIcon"
+        };
 
         // We don't want to patch a method that's already patched, since patches are "global" so to speak. We do this dynamically for Custom Interactables to work.
         foreach (string methodName in targetMethods)
@@ -140,6 +138,7 @@ public class Interactable
             //BepInExPlugin.Instance._harmony.Patch(property.GetGetMethod(), new HarmonyMethod(patchMethod));
         }
     }
+    */
 
     /// <summary>
     /// Prepares the freshly created Interactable by setting its values to the base-game object's values. This method assumes that the provided <see cref="Usable"/> is a valid IUsable.
@@ -147,11 +146,11 @@ public class Interactable
     private void PrepareValues()
     {
         string[] targetProperties =
-{
-                "UsableDistance",
-                "PercentCool",
-                "UseIcon"
-            };
+        {
+            "UsableDistance",
+            "PercentCool",
+            "UseIcon"
+        };
 
         foreach (string propertyName in targetProperties)
         {
@@ -172,6 +171,8 @@ public class Interactable
                 case "UseIcon": UseIcon = value.Unbox<ImageNames>(); break;
             }
         }
+
+        Logger.LogMessage($"Read values:\nDistance: {UsableDistance}\nPercentCool: {PercentCool}\nUseIcon: {UseIcon}");
     }
 
     /// <summary>
@@ -235,29 +236,18 @@ public class Interactable
     {
         List<Interactable> interactables = new List<Interactable>();
 
-        ShipStatus map = UnityEngine.Object.FindObjectOfType<ShipStatus>();
+        List<Component> validUsables = new List<Component>();
 
-        if (map == null)
-            return interactables;
-
-        List<GameObject> childObjects = new List<GameObject>();
-
-        foreach (Component comp in map.gameObject.GetComponentsInChildren<Transform>())
+        foreach (Type type in IUsableWrapper.KnownIUsableImplementers)
         {
-            childObjects.Add(comp.gameObject);
+            Il2CppSystem.Object[] usables = UnityEngine.Object.FindObjectsOfType(Il2CppType.From(type));
+            foreach (Il2CppSystem.Object obj in usables)
+                validUsables.Add(obj as Component);
         }
 
-        foreach (GameObject obj in childObjects)
-        {
-            Interactable interactable = Get(obj, autoInit: false);
+        foreach (Component comp in validUsables)
+            interactables.Add(Get(comp));
 
-            if (interactable == null)
-                continue;
-
-            interactables.Add(interactable);
-        }
-
-        interactables.ForEach(x => x.Init());
         return interactables;
     }
 
@@ -281,23 +271,19 @@ public class Interactable
         if (GameObjectToInteractable.ContainsKey(gameObject))
             return GameObjectToInteractable[gameObject];
 
-        Component validInteractable = null;
+        Component[] components = gameObject.GetComponents<Component>();
         Interactable interactable = null;
 
-        Component[] components = gameObject.GetComponents<Component>();
-
-        if (components.Any(x => IUsableWrapper.ImplementsIUsable(x.GetIl2CppType())))
+        if (components.Any(x => IUsableWrapper.KnownIUsableImplementers.Contains(x.GetIl2CppType().GetManagedType())))
         {
-            validInteractable = components.First(x => IUsableWrapper.ImplementsIUsable(x.GetIl2CppType()));
-            interactable = new Interactable(validInteractable);
-        }
-        else if (components.Any(x => IUsableWrapper.ImplementsIUsableCoolDown(x.GetIl2CppType())))
-        {
-            validInteractable = components.First(x => IUsableWrapper.ImplementsIUsableCoolDown(x.GetIl2CppType()));
-            interactable = new InteractableCooldown(validInteractable);
+            Component implementer = components.First(x => IUsableWrapper.KnownIUsableImplementers.Contains(x.GetIl2CppType().GetManagedType()));
+            if (IUsableWrapper.KnownIUsableCooldownImplementers.Contains(implementer.GetIl2CppType().GetManagedType()))
+                interactable = new InteractableCooldown(implementer);
+            else
+                interactable = new Interactable(implementer);
         }
 
-        if (validInteractable == null || interactable == null)
+        if (interactable == null)
             return null;
 
         GameObjectToInteractable.Add(gameObject, interactable);

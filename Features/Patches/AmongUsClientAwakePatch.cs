@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
+using SuspiciousAPI.Features.Helpers.AmongUs.IUsable;
 using SuspiciousAPI.Features.Helpers.Unity;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,9 @@ public static class AmongUsClientAwakePatch
 
             UnityMethods comp = obj.AddComponent<UnityMethods>();
             UnityMethods.Instance = comp;
+
+            // Handle IUsables here
+            IUsableWrapper.RegisterUsables(IUsableWrapper.AllBaseGameImplementers);
         }
     }
 }

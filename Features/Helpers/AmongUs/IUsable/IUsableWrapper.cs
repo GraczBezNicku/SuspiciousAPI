@@ -1,55 +1,48 @@
-﻿using HarmonyLib;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using HarmonyLib;
 using Il2CppInterop.Runtime;
 using Il2CppSystem.Reflection;
 using SuspiciousAPI.Features.Helpers.IL2CPP;
 using SuspiciousAPI.Features.Interactables.Patches;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace SuspiciousAPI.Features.Helpers.AmongUs.IUsable;
 
 public class IUsableWrapper
 {
-    public static readonly Type[] BaseGameIUsableImplementers =
+    public static readonly Type[] AllBaseGameImplementers =
     {
-            typeof(Console),
-            typeof(DeconControl),
-            typeof(DoorConsole),
-            typeof(MapConsole),
-            typeof(OpenDoorConsole),
-            typeof(OptionsConsole),
-            typeof(PlatformConsole),
-            typeof(SystemConsole),
-            typeof(Vent)
-        };
-
-    public static readonly Type[] BaseGameIUsableCoolDownImplementers =
-    {
-            typeof(Ladder),
-            typeof(ZiplineConsole)
-        };
+        typeof(Console),
+        typeof(DeconControl),
+        typeof(DoorConsole),
+        typeof(MapConsole),
+        typeof(OpenDoorConsole),
+        typeof(OptionsConsole),
+        typeof(PlatformConsole),
+        typeof(SystemConsole),
+        typeof(Vent),
+        typeof(Ladder),
+        typeof(ZiplineConsole)
+    };
 
     private static readonly string[] _IUsablePatchTargets =
     {
-            "M_SetOutline",
-            "M_CanUse",
-            "M_Use",
-            "P_UsableDistance",
-            "P_PercentCool",
-            "P_UseIcon"
-        };
+        "M_SetOutline",
+        "M_CanUse",
+        "M_Use",
+    };
 
     private static readonly string[] _IUsableCoolDownPatchTargets =
     {
-            "M_IsCoolingDown",
-            "P_CoolDown",
-            "P_MaxCoolDown"
-        };
+        "M_IsCoolingDown",
+    };
 
-    // zrob liste IUsablePatchTargets i IUsableCoolDownPatchTargets (nazwy metod i property)
-    private static List<Type> KnownIUsableImplementers = new List<Type>();
-    private static List<Type> KnownIUsableCooldownImplementers = new List<Type>();
+    public static List<Type> KnownIUsableImplementers = new List<Type>();
+    public static List<Type> KnownIUsableCooldownImplementers = new List<Type>();
 
     private static List<Type> IUsableBlacklistedTypes = new List<Type>();
     private static List<Type> IUsableCooldownBlacklistedTypes = new List<Type>();
@@ -70,58 +63,72 @@ public class IUsableWrapper
 
         Type[] IUsableImplementers = KnownIUsableImplementers.Where(x => types.Contains(x)).ToArray();
 
-        void PatchAllTargets(Type type, string[] targets)
+        IEnumerator PatchAllTargets(Type[] types, string[] targets)
         {
-            foreach (string patchTarget in targets)
+            foreach (Type type in types)
             {
-                try
+                yield return new WaitForEndOfFrame();
+
+                foreach (string patchTarget in targets)
                 {
-                    bool isProperty = patchTarget.StartsWith("P_");
-                    string trueName = patchTarget.Substring(2, patchTarget.Length - 2);
+                    yield return new WaitForEndOfFrame();
 
-                    System.Reflection.PropertyInfo _backingProperty = type.GetProperty(trueName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-
-                    System.Reflection.MethodBase target = isProperty
-                        ? (_backingProperty == null ? null : _backingProperty.GetGetMethod())
-                        : type.GetMethod(trueName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-
-                    if (target == null)
+                    try
                     {
-                        Logger.LogError($"A presummed IUsable implementer lacks an IUsable element ({trueName})");
+                        Logger.LogMessage($"Beginning patches for {type.Name} ({patchTarget})");
+                        bool isProperty = patchTarget.StartsWith("P_");
+                        string trueName = patchTarget.Substring(2, patchTarget.Length - 2);
+
+                        System.Reflection.PropertyInfo _backingProperty = type.GetProperty(trueName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+
+                        System.Reflection.MethodBase target = isProperty
+                            ? (_backingProperty == null ? null : _backingProperty.GetGetMethod())
+                            : type.GetMethod(trueName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+
+                        if (target == null)
+                        {
+                            Logger.LogError($"A presumed IUsable implementer lacks an IUsable element ({trueName})");
+                            continue;
+                        }
+
+                        var patches = Harmony.GetPatchInfo(target);
+
+                        if (patches != null && patches.Owners.Any(x => x == BepInExPlugin.Instance._harmony.Id))
+                        {
+                            Logger.LogMessage($"This method was already patched by SusAPI. Skipping...");
+                            continue;
+                        }
+
+                        var patchMethod = typeof(IUsablePatches).GetMethod($"{trueName}Prefix", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+
+                        if (patchMethod == null)
+                        {
+                            Logger.LogError($"Tried patching with a method that doesn't exist! ({trueName}Prefix)");
+                            continue;
+                        }
+
+                        Logger.LogMessage($"Patching {patchTarget} for {type.Name}");
+                        
+                        PatchProcessor proc = BepInExPlugin.Instance._harmony.CreateProcessor(target);
+                        proc.AddPrefix(patchMethod);
+                        proc.Patch();
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Failed patching for a specified patch target!\n{ex.Message}\n{ex.StackTrace}\n{ex.Source}\n{ex.InnerException}");
                         continue;
                     }
-
-                    var patches = Harmony.GetPatchInfo(target);
-
-                    if (patches != null && patches.Owners.Any(x => x == BepInExPlugin.Instance._harmony.Id))
-                    {
-                        Logger.LogMessage($"This method seems to have already been patched by SusAPI. Skipping...");
-                        continue;
-                    }
-
-                    var patchMethod = typeof(IUsablePatches).GetMethod($"{trueName}Prefix", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-
-                    if (patchMethod == null)
-                    {
-                        Logger.LogError($"Tried patching with a method that doesn't exist! ({trueName}Prefix)");
-                        continue;
-                    }
-
-                    BepInExPlugin.Instance._harmony.Patch(target, prefix: new HarmonyMethod(patchMethod));
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError($"Failed patching for a specified patch target!\n{ex.Message}\n{ex.StackTrace}\n{ex.Source}\n{ex.InnerException}");
-                    continue;
                 }
             }
         }
 
-        foreach (Type type in IUsableImplementers)
-        {
-            PatchAllTargets(type, _IUsablePatchTargets);
-            PatchAllTargets(type, _IUsableCoolDownPatchTargets);
-        }
+        List<string> allTargets = new List<string>();
+        foreach (string target in _IUsablePatchTargets)
+            allTargets.Add(target);
+        foreach (string target in _IUsableCoolDownPatchTargets)
+            allTargets.Add(target);
+
+        CoroutineHelper.Instance.StartCoroutine(PatchAllTargets(IUsableImplementers, allTargets.ToArray()));
     }
 
     /// <summary>
@@ -129,7 +136,7 @@ public class IUsableWrapper
     /// </summary>
     /// <param name="type"></param>
     /// <returns><see langword="true"/> if the type implements IUsable, <see langword="false"/> if not.</returns>
-    public static bool ImplementsIUsable(Il2CppSystem.Type type)
+    private static bool ImplementsIUsable(Il2CppSystem.Type type)
     {
         if (KnownIUsableImplementers.Contains(type.GetManagedType()))
             return true;
@@ -204,7 +211,7 @@ public class IUsableWrapper
     /// </summary>
     /// <param name="type"></param>
     /// <returns><see langword="true"/> if the type implements IUsableCoolDown, <see langword="false"/> if not.</returns>
-    public static bool ImplementsIUsableCoolDown(Il2CppSystem.Type type)
+    private static bool ImplementsIUsableCoolDown(Il2CppSystem.Type type)
     {
         if (KnownIUsableCooldownImplementers.Contains(type.GetManagedType()))
             return true;
