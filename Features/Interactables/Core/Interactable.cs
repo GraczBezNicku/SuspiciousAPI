@@ -44,101 +44,12 @@ public class Interactable
         try
         {
             PrepareValues();
-            //PreparePatches();
         }
         catch (Exception ex)
         {
             Logger.LogError($"Caught an exception in Interactable::Init()\n{ex}");
         }
     }
-
-    /*
-    /// <summary>
-    /// Prepares the freshly created Interactable object to be compatible. This method assumes that the provided <see cref="Usable"/> is a valid IUsable.
-    /// </summary>
-    private void PreparePatches()
-    {
-        Logger.LogMessage($"Starting patches for {(Usable as Component).gameObject.name}!");
-        string[] targetMethods =
-        {
-            "SetOutline",
-            "CanUse",
-            "Use"
-        };
-
-        string[] targetProperties =
-        {
-            "UsableDistance",
-            "PercentCool",
-            "UseIcon"
-        };
-
-        // We don't want to patch a method that's already patched, since patches are "global" so to speak. We do this dynamically for Custom Interactables to work.
-        foreach (string methodName in targetMethods)
-        {
-            var method = UsableScriptType.GetManagedType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public).GetDeclaredMember();
-
-            if (method == null)
-            {
-                Logger.LogError($"A presumed IUsable script lacks an IUsable method! ({methodName})");
-                continue;
-            }
-
-            var patches = Harmony.GetPatchInfo(method);
-
-            if (patches != null && patches.Owners.Any(x => x == BepInExPlugin.Instance._harmony.Id))
-            {
-                Logger.LogMessage($"This method seems to have already been patched by SusAPI. Skipping...");
-                continue;
-            }
-
-            var patchMethod = typeof(IUsablePatches).GetMethod($"{method.Name}Prefix", BindingFlags.Public | BindingFlags.Static);
-
-            if (patchMethod == null)
-            {
-                Logger.LogError($"Tried patching with a method that doesn't exist! ({method.Name}Prefix)");
-                continue;
-            }
-
-            PatchProcessor proc = BepInExPlugin.Instance._harmony.CreateProcessor(method);
-            proc.AddPrefix(patchMethod);
-            proc.Patch();
-            //BepInExPlugin.Instance._harmony.Patch(method, new HarmonyMethod(patchMethod));
-        }
-
-        foreach (string propertyName in targetProperties)
-        {
-            var property = UsableScriptType.GetManagedType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public).GetDeclaredMember();
-
-            if (property == null)
-            {
-                Logger.LogError($"A presumed IUsable script lacks a IUsable property! ({propertyName})");
-                continue;
-            }
-
-            var patches = Harmony.GetPatchInfo(property.GetGetMethod());
-
-            if (patches != null && patches.Owners.Any(x => x == BepInExPlugin.Instance._harmony.Id))
-            {
-                Logger.LogMessage($"This property seems to have already been patched by SusAPI. Skipping...");
-                continue;
-            }
-
-            var patchMethod = typeof(IUsablePatches).GetMethod($"{propertyName}Prefix", BindingFlags.Public | BindingFlags.Static);
-
-            if (patchMethod == null)
-            {
-                Logger.LogError($"Tried patching with a method that doesn't exist! ({propertyName}Prefix)");
-                continue;
-            }
-
-            PatchProcessor proc = BepInExPlugin.Instance._harmony.CreateProcessor(property.GetGetMethod());
-            proc.AddPrefix(patchMethod);
-            proc.Patch();
-            //BepInExPlugin.Instance._harmony.Patch(property.GetGetMethod(), new HarmonyMethod(patchMethod));
-        }
-    }
-    */
 
     /// <summary>
     /// Prepares the freshly created Interactable by setting its values to the base-game object's values. This method assumes that the provided <see cref="Usable"/> is a valid IUsable.

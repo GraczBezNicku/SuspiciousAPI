@@ -17,7 +17,7 @@ namespace SuspiciousAPI.Features.Interactables.Patches;
 [HarmonyPatch]
 public static class UseButtonPatches
 {
-    public static IEnumerable<UseButtonSettings> allSettings;
+    public static IEnumerable<UseButtonSettings> AllSettings;
 
     [HarmonyPostfix]
     [HarmonyPatch(typeof(UseButton), nameof(UseButton.Awake))]
@@ -25,14 +25,15 @@ public static class UseButtonPatches
     {
         Logger.LogMessage($"Is fastSettings null? {__instance.fastUseSettings == null}");
 
-        allSettings = Enumerable.Empty<UseButtonSettings>();
+        AllSettings = Enumerable.Empty<UseButtonSettings>();
         foreach (UseButtonSettings sett in __instance.fastUseSettings.Values)
         {
             Logger.LogMessage($"Adding settings to allSettings. {sett.ButtonType}");
-            allSettings = allSettings.AddItem(sett);
+            AllSettings = AllSettings.AddItem(sett);
         }
     }
 
+    // FIXME: Buttons look as if they were in fullbright mode if modified.
     [HarmonyPrefix]
     [HarmonyPatch(typeof(UseButton), nameof(UseButton.SetFromSettings))]
     public static bool SetFromSettingsPrefix(UseButton __instance, UseButtonSettings __0)
@@ -54,10 +55,10 @@ public static class UseButtonPatches
         {
             interactable.UseIcon = ImageNames.VitalsButton;
 
-            UseButtonSettings targetSett = allSettings.First(x => x.ButtonType == interactable.UseIcon);
+            UseButtonSettings targetSett = AllSettings.First(x => x.ButtonType == interactable.UseIcon);
             __instance.graphic.sprite = targetSett.Image;
             __instance.buttonLabelText.fontMaterial = targetSett.FontMaterial;
-            __instance.buttonLabelText.text = TranslationController.Instance.GetString(targetSett.Text);
+            __instance.buttonLabelText.text = Localization.GetLocalizedText(targetSett.Text);
             return false;
         }
 
