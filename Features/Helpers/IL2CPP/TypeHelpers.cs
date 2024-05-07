@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SuspiciousAPI.Features.Helpers.IL2CPP;
 
+/// <summary>
+/// Various utilities for dealing with Types.
+/// </summary>
 public static class TypeHelpers
 {
     public static Dictionary<Il2CppSystem.Type, Type> Il2CppToManagedType = new Dictionary<Il2CppSystem.Type, Type>();
