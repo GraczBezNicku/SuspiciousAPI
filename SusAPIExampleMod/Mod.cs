@@ -1,6 +1,7 @@
 ﻿using SuspiciousAPI.Features;
 using SuspiciousAPI.Features.Events.Core;
 using SuspiciousAPI.Features.ModLoader.Core;
+using SuspiciousAPI.Features.Roles.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,8 @@ public class Mod : SusMod
             return;
 
         EventManager.RegisterEvents(this);
+        Role.RegisterAllRoles(this);
+        Team.RegisterAllTeams(this);
 
         LogMessage($"ExampleMod has been initialized!");
     }

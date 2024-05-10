@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,11 +12,11 @@ namespace SuspiciousAPI.Features.Roles.Core;
 /// </summary>
 public abstract class Team
 {
-    public static HashSet<Team> AllTeams { get; private set; } = new HashSet<Team>();
+    public static HashSet<Team> RegisteredTeams { get; private set; } = new HashSet<Team>();
 
     public Team()
     {
-        AllTeams.Add(this);
+        
     }
 
     /// <summary>
@@ -27,6 +28,58 @@ public abstract class Team
     /// Text that is displayed when the <see cref="Team"/> wins.
     /// </summary>
     public abstract string EndScreenText { get; set; }
+
+    /// <summary>
+    /// Registeres all <see cref="Team"/>s in the provided mod instance.
+    /// </summary>
+    /// <param name="mod">Mod instance</param>
+    public static void RegisterAllTeams(object mod)
+    {
+        Assembly ass = mod.GetType().Assembly;
+
+        foreach (Type t in ass.GetTypes())
+        {
+            if (!t.IsSubclassOf(typeof(Team)))
+                continue;
+
+            RegisterTeam(t);
+        }
+    }
+
+    /// <summary>
+    /// Unregisteres all <see cref="Team"/>s in the provided mod instance.
+    /// </summary>
+    /// <param name="mod">Mod instance</param>
+    public static void UnregisterAllTeams(object mod)
+    {
+        Assembly ass = mod.GetType().Assembly;
+
+        foreach (Type t in ass.GetTypes())
+        {
+            if (!t.IsSubclassOf(typeof(Team)))
+                continue;
+
+            UnregisterTeam(t);
+        }
+    }
+
+    /// <summary>
+    /// Registers a <see cref="Team"/> using the specified <see cref="Type"/>.
+    /// </summary>
+    /// <param name="roleType"><see cref="Type"/> of the desired <see cref="Role"/></param>
+    public static void RegisterTeam(Type teamType)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Unregisters a <see cref="Team"/> using the specified <see cref="Type"/>.
+    /// </summary>
+    /// <param name="roleType"><see cref="Type"/> of the desired <see cref="Role"/></param>
+    public static void UnregisterTeam(Type teamType)
+    {
+        throw new NotImplementedException();
+    }
 
     /// <summary>
     /// Ends the game with the <see cref="Team"/> winning. By default, shows all <see cref="Player"/>s belonging to the <see cref="Team"/>.

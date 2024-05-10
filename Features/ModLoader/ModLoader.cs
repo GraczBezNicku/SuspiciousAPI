@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using Il2CppInterop.Runtime.Injection;
 using SuspiciousAPI.Features.ModLoader.Core;
+using SuspiciousAPI.Features.Roles.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -86,6 +87,7 @@ public static class ModLoader
 
             try
             {
+                // Config
                 SusMod mod = (SusMod)Activator.CreateInstance(modClass);
                 mod.LoadConfig(out var cfg);
 
@@ -94,8 +96,10 @@ public static class ModLoader
                     ModInstanceToConfig.Add(mod, cfg);
                 }
 
+                // Monos
                 RegisterAllMonoBehaviours(mod);
 
+                // Finalizer
                 ModInstances.Add(modClass, mod);
                 mod.Load();
             }

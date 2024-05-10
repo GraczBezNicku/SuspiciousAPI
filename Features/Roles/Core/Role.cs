@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -8,18 +9,26 @@ using UnityEngine;
 namespace SuspiciousAPI.Features.Roles.Core;
 
 /// <summary>
-/// This class represents the most basic representation of a playable <see cref="Role"/>.
+/// This class is the most basic representation of a playable <see cref="Role"/>.
 /// </summary>
 public abstract class Role
 {
+    /// <summary>
+    /// Holds all Registered <see cref="Role"/>s. 
+    /// </summary>
+    public static HashSet<Role> RegisteredRoles { get; private set; } = new HashSet<Role>();
+
     /// <summary>
     /// Holds all <see cref="Role"/>s belonging the the <see cref="Player"/>s. Direct fetching isn't recommended.
     /// </summary>
     public static Dictionary<Player, Role> PlayerToRole { get; private set; } = new Dictionary<Player, Role>();
 
-    public Role()
+    public Role(Player p)
     {
+        if (p == null)
+            return;
 
+        // Handle any required setup that wasn't or couldn't be handled in the AssignRole() method.
     }
 
     /// <summary>
@@ -64,8 +73,8 @@ public abstract class Role
     {
         get
         {
-            if (Team.AllTeams.Any(x => x.TeamIdentifier == TeamIdentifier))
-                return Team.AllTeams.First(x => x.TeamIdentifier == TeamIdentifier);
+            if (Team.RegisteredTeams.Any(x => x.TeamIdentifier == TeamIdentifier))
+                return Team.RegisteredTeams.First(x => x.TeamIdentifier == TeamIdentifier);
 
             return null;
         }
@@ -82,13 +91,76 @@ public abstract class Role
     public abstract bool AffectedByLightAffectors { get; set; }
 
     /// <summary>
-    /// Fetches the <see cref="Player"/>'s role.
+    /// Registeres all <see cref="Role"/>s in the provided mod instance.
+    /// </summary>
+    /// <param name="mod">Mod instance</param>
+    public static void RegisterAllRoles(object mod)
+    {
+        Assembly ass = mod.GetType().Assembly;
+
+        foreach (Type t in ass.GetTypes())
+        {
+            if (!t.IsSubclassOf(typeof(Role)))
+                continue;
+
+            RegisterRole(t);
+        }
+    }
+
+    /// <summary>
+    /// Unregisteres all <see cref="Role"/>s in the provided mod instance.
+    /// </summary>
+    /// <param name="mod">Mod instance</param>
+    public static void UnregisterAllRoles(object mod)
+    {
+        Assembly ass = mod.GetType().Assembly;
+
+        foreach (Type t in ass.GetTypes())
+        {
+            if (!t.IsSubclassOf(typeof(Role)))
+                continue;
+
+            UnregisterRole(t);
+        }
+    }
+
+    /// <summary>
+    /// Registers a <see cref="Role"/> using the specified <see cref="Type"/>.
+    /// </summary>
+    /// <param name="roleType"><see cref="Type"/> of the desired <see cref="Role"/></param>
+    public static void RegisterRole(Type roleType)
+    {
+        // Remember to check for name duplication!
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Unregisters a <see cref="Role"/> using the specified <see cref="Type"/>.
+    /// </summary>
+    /// <param name="roleType"><see cref="Type"/> of the desired <see cref="Role"/></param>
+    public static void UnregisterRole(Type roleType)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Fetches the <see cref="Player"/>'s <see cref="Role"/> instance.
     /// </summary>
     /// <param name="player">Target <see cref="Player"/></param>
     /// <returns><see cref="Role"/> if one is found, otherwise <see langword="null"/></returns>
     public static Role Get(Player player)
     {
         return PlayerToRole.ContainsKey(player) ? PlayerToRole[player] : null;
+    }
+
+    /// <summary>
+    /// Fetches a <see cref="Role"/> template instance by its <see cref="Type"/> name.
+    /// </summary>
+    /// <param name="typeName">Name of the <see cref="Role"/>'s <see cref="Type"/></param>
+    /// <returns><see cref="Role"/> template if one is found, otherwise null</returns>
+    public static Role GetTemplate(string typeName)
+    {
+        return RegisteredRoles.Any(x => x.GetType().Name == typeName) ? RegisteredRoles.First(x => x.GetType().Name == typeName) : null;
     }
 
     /// <summary>
@@ -102,7 +174,7 @@ public abstract class Role
 
         // Assign logic here
 
-        PlayerToRole.Add(player, this);
+        PlayerToRole.Add(player, (Role)Activator.CreateInstance(GetType(), new object[] { player }));
     }
 
     /// <summary>

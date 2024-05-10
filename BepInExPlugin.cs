@@ -5,6 +5,7 @@ using HarmonyLib.Tools;
 using SuspiciousAPI.Features;
 using SuspiciousAPI.Features.Helpers.AmongUs.IUsable;
 using SuspiciousAPI.Features.ModLoader;
+using SuspiciousAPI.Features.Roles.Core;
 using System;
 using System.IO;
 using System.Linq;
@@ -24,16 +25,23 @@ public class BepInExPlugin : BasePlugin
     {
         Instance = this;
 
+        // Config
         BepInExConfig.Bind(Config);
 
+        // Monos
         ModLoader.RegisterAllMonoBehaviours(this);
 
+        // Harmony
         _harmony = new Harmony($"GBN-SUSPICIOUSAPI");
         _harmony.PatchAll();
 
+        // Mod Loader
         SetupDirectories();
-
         ModLoader.LoadAllMods();
+
+        // Roles & Teams
+        Role.RegisterAllRoles(this);
+        Team.RegisterAllTeams(this);
 
         Log.LogMessage($"Suspicious API has been initialized!");
     }
