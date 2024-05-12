@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SuspiciousAPI.Features.Roles.Base.Roles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -57,9 +58,9 @@ public abstract class Role
     public abstract Type BaseType { get; set; }
 
     /// <summary>
-    /// Which role will the <see cref="Player"/> turn into if they die while being this <see cref="Role"/>.
+    /// Which role will the <see cref="Player"/> turn into if they die while being this <see cref="Role"/>. If the <see cref="Role"/> cannot be killed or is a ghost, you can leave this empty.
     /// </summary>
-    public abstract Role GhostRole { get; set; }
+    public abstract string GhostRole { get; set; }
 
     /// <summary>
     /// Identifier of the desired <see cref="Core.Team"/>
@@ -147,10 +148,11 @@ public abstract class Role
     /// Fetches the <see cref="Player"/>'s <see cref="Role"/> instance.
     /// </summary>
     /// <param name="player">Target <see cref="Player"/></param>
+    /// <param name="autoAssign">If the <see cref="Role"/> is vanilla, should it automatically be asigned to this <see cref="Player"/> on being found. Recommended <see langword="true"/></param>
     /// <returns><see cref="Role"/> if one is found, otherwise <see langword="null"/></returns>
-    public static Role Get(Player player)
+    public static Role Get(Player player, bool autoAssign = true)
     {
-        return PlayerToRole.ContainsKey(player) ? PlayerToRole[player] : null;
+        return PlayerToRole.ContainsKey(player) ? PlayerToRole[player] : ResolveVanillaRole(player.Control.Data.Role);
     }
 
     /// <summary>
@@ -161,6 +163,30 @@ public abstract class Role
     public static Role GetTemplate(string typeName)
     {
         return RegisteredRoles.Any(x => x.GetType().Name == typeName) ? RegisteredRoles.First(x => x.GetType().Name == typeName) : null;
+    }
+
+    /// <summary>
+    /// Fetches a <see cref="Role"/> instance for the specified <see cref="RoleBehaviour"/>.
+    /// </summary>
+    /// <param name="role"><see cref="RoleBehaviour"/> of the desired role</param>
+    /// <param name="autoAssign">Whether or not to apply the found <see cref="Role"/> to the <see cref="Player"/> owning this <see cref="RoleBehaviour"/></param>
+    /// <returns><see cref="Role"/> if one is found, otherwise <see langword="null"/></returns>
+    private static Role ResolveVanillaRole(RoleBehaviour role, bool autoAssign = true)
+    {
+        foreach (Role r in RegisteredRoles)
+        {
+            if (!r.GetType().IsSubclassOf(typeof(VanillaRole)))
+                continue;
+             
+            VanillaRole vanillaRole = r as VanillaRole;
+
+            if (vanillaRole.OriginalRole != role.Role)
+                continue;
+
+            return vanillaRole;
+        }
+
+        return null;
     }
 
     /// <summary>

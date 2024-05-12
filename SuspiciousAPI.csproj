@@ -74,7 +74,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Roles\Base\Teams\" />
-    <Folder Include="Features\Roles\Base\Roles\" />
     <Folder Include="Features\Roles\Patches\" />
   </ItemGroup>
 
