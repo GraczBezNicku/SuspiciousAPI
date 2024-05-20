@@ -48,6 +48,16 @@ public abstract class Role
     public abstract string Description { get; set; }
 
     /// <summary>
+    /// Chance of the <see cref="Role"/> appearing in a round.
+    /// </summary>
+    public abstract float Chance { get; set; }
+
+    /// <summary>
+    /// How many <see cref="Player"/>s can have this role at the start.
+    /// </summary>
+    public abstract int MaxAmount { get; set; }
+
+    /// <summary>
     /// Color of the <see cref="Role"/>.
     /// </summary>
     public abstract Color RoleColor { get; set; }

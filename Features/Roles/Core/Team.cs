@@ -30,6 +30,16 @@ public abstract class Team
     public abstract string EndScreenText { get; set; }
 
     /// <summary>
+    /// Chance of this <see cref="Team"/> appearing in a round.
+    /// </summary>
+    public abstract float Chance { get; set; }
+
+    /// <summary>
+    /// Maximum number of <see cref="Player"/>s that can become this <see cref="Team"/> at the start.
+    /// </summary>
+    public abstract int MaxAmount { get; set; }
+
+    /// <summary>
     /// Registeres all <see cref="Team"/>s in the provided mod instance.
     /// </summary>
     /// <param name="mod">Mod instance</param>
