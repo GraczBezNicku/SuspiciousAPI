@@ -1,15 +1,8 @@
 ﻿using BepInEx;
 using Il2CppInterop.Runtime.Injection;
 using SuspiciousAPI.Features.ModLoader.Core;
-using SuspiciousAPI.Features.Roles.Core;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SuspiciousAPI.Features.ModLoader;

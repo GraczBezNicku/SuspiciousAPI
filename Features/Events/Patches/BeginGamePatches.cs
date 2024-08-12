@@ -1,14 +1,5 @@
-﻿using BepInEx.Unity.IL2CPP.Utils;
-using HarmonyLib;
+﻿using HarmonyLib;
 using SuspiciousAPI.Features.Events.Core;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TMPro;
-using UnityEngine;
 
 namespace SuspiciousAPI.Features.Events.Patches;
 

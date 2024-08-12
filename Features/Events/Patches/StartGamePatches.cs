@@ -1,11 +1,6 @@
 ﻿using HarmonyLib;
 using SuspiciousAPI.Features.Events.Core;
 using SuspiciousAPI.Features.Helpers.Unity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SuspiciousAPI.Features.Events.Patches;
 

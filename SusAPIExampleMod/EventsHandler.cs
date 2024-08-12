@@ -1,15 +1,10 @@
-﻿using SuspiciousAPI.Features;
+﻿using BepInEx.Unity.IL2CPP.Utils;
+using SuspiciousAPI.Features;
 using SuspiciousAPI.Features.Events;
 using SuspiciousAPI.Features.Events.Core;
 using SuspiciousAPI.Features.Interactables.Core;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using BepInEx.Unity.IL2CPP.Utils;
 using static SuspiciousAPI.Features.Logger;
 
 namespace SusAPIExampleMod;

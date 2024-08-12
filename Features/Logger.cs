@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static HarmonyLib.Tools.Logger;
-
-namespace SuspiciousAPI.Features;
+﻿namespace SuspiciousAPI.Features;
 
 public static class Logger
-{ 
+{
     public static void LogMessage(object data) => BepInExPlugin.Instance.Log.LogMessage(data);
     public static void LogInfo(object data) => BepInExPlugin.Instance.Log.LogInfo(data);
 

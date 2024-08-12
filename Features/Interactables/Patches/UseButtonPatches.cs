@@ -1,12 +1,6 @@
 ﻿using HarmonyLib;
 using Il2CppInterop.Runtime.Runtime;
-using Il2CppSystem;
 using SuspiciousAPI.Features.Interactables.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SuspiciousAPI.Features.Interactables.Patches;

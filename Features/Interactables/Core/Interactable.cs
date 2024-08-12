@@ -1,15 +1,5 @@
-﻿using BepInEx.Unity.IL2CPP.Utils;
-using HarmonyLib;
-using Il2CppInterop.Runtime;
+﻿using Il2CppInterop.Runtime;
 using SuspiciousAPI.Features.Helpers.AmongUs.IUsable;
-using SuspiciousAPI.Features.Interactables.Patches;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 using static SuspiciousAPI.Features.Helpers.IL2CPP.TypeHelpers;

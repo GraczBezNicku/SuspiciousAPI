@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SuspiciousAPI.Features;
+﻿namespace SuspiciousAPI.Features;
 
 /// <summary>
 /// Various utilities for interacting with the game itself.

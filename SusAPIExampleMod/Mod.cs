@@ -1,13 +1,6 @@
-﻿using SuspiciousAPI.Features;
-using SuspiciousAPI.Features.Events.Core;
+﻿using SuspiciousAPI.Features.Events.Core;
 using SuspiciousAPI.Features.ModLoader.Core;
 using SuspiciousAPI.Features.Roles.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 using static SuspiciousAPI.Features.Logger;
 

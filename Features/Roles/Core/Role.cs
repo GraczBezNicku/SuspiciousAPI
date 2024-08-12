@@ -1,10 +1,5 @@
 ﻿using SuspiciousAPI.Features.Roles.Base.Roles;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SuspiciousAPI.Features.Roles.Core;
@@ -187,7 +182,7 @@ public abstract class Role
         {
             if (!r.GetType().IsSubclassOf(typeof(VanillaRole)))
                 continue;
-             
+
             VanillaRole vanillaRole = r as VanillaRole;
 
             if (vanillaRole.OriginalRole != role.Role)

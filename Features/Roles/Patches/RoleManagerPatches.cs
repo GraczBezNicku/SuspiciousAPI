@@ -1,10 +1,5 @@
 ﻿using HarmonyLib;
 using SuspiciousAPI.Features.Roles.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SuspiciousAPI.Features.Roles.Patches;
 
@@ -27,6 +22,14 @@ public static class RoleManagerPatches
     {
         throw new NotImplementedException("Assigning roles is not implemented yet!");
 
+        /*
+         * Method:
+         * 1. Generate weights based on chance numbers
+         * 2. Choose teams based on their weights, and remove ones that will pass their limit on next roll
+         * 3. Roll roles from chosen teams using weights, removing ones that will pass their limit on next roll.
+         * 4. Assign roles randomly.
+         */
+
         List<Team> possibleTeams = new List<Team>();
 
         foreach (Team team in Team.RegisteredTeams)
@@ -38,24 +41,7 @@ public static class RoleManagerPatches
         foreach (Team team in possibleTeams.ToArray())
         {
             if (UnityEngine.Random.Range(0, 100) > team.Chance)
-                possibleTeams.Remove(team);
+                possibleTeams.RemoveAll(x => x.GetType() == team.GetType());
         }
-
-        List<Role> possibleRoles = new List<Role>();
-
-        foreach (Role role in Role.RegisteredRoles)
-        {
-            for (int i = 0; i < role.MaxAmount; i++)
-                possibleRoles.Add(role);
-        }
-
-        foreach (Role role in possibleRoles.ToArray())
-        {
-            if (UnityEngine.Random.Range(0, 100) > role.Chance)
-                possibleRoles.Remove(role);
-        }
-
-        // At this point all roles have been chosen and will be assigned sorted by chance. 
-        List<Role> roleSortedByChance = possibleRoles.OrderBy(x => x.Chance).ToList();
     }
 }

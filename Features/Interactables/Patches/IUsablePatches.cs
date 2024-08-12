@@ -1,13 +1,4 @@
-﻿using HarmonyLib;
-using SuspiciousAPI.Features.Interactables.Core;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SuspiciousAPI.Features.Interactables.Patches;
+﻿namespace SuspiciousAPI.Features.Interactables.Patches;
 
 // TODO: Implement all patches
 /// <summary>

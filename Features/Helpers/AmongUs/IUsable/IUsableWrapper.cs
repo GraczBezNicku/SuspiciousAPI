@@ -4,10 +4,7 @@ using Il2CppInterop.Runtime;
 using Il2CppSystem.Reflection;
 using SuspiciousAPI.Features.Helpers.IL2CPP;
 using SuspiciousAPI.Features.Interactables.Patches;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace SuspiciousAPI.Features.Helpers.AmongUs.IUsable;
@@ -108,7 +105,7 @@ public class IUsableWrapper
                         }
 
                         Logger.LogMessage($"Patching {patchTarget} for {type.Name}");
-                        
+
                         PatchProcessor proc = BepInExPlugin.Instance._harmony.CreateProcessor(target);
                         proc.AddPrefix(patchMethod);
                         proc.Patch();
